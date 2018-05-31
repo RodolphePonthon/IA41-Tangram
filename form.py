@@ -1,4 +1,5 @@
 #!--*--coding:utf-8--*--
+from math import cos, sin
 
 class Form:
 
@@ -96,3 +97,22 @@ def equation_analyze(eq, p):
 		dir_x = diff_x / abs(diff_x) if diff_x != 0 else 0
 		dir_y = (diff_y) / abs(diff_y) if diff_y != 0 else 0
 	return[eq, dir_x, dir_y]
+
+def rotation(self, w):
+
+    [xm, ym] = self.ptMoyen()
+    rotatedSommets = self.sommets
+
+    for i in range(len(self.sommets)-1):
+        rotatedSommets[i][0] = self.sommets[i][0] * cos(w) - sin(w) * self.sommets[i][1]
+        rotatedSommets[i][1] = self.sommets[i][0] * sin(w) + cos(w) * self.sommets[i][1]
+
+    self.sommets = rotatedSommets
+    [newXm, newYm] = self.ptMoyen()
+
+    decalx = newXm - xm
+    decaly = newYm - ym
+
+    for i in range(len(rotatedSommets)-1):
+        rotatedSommets[i][0] = rotatedSommets[i][0] + decalx
+        rotatedSommets[i][1] = rotatedSommets[i][1] + decaly
