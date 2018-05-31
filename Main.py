@@ -36,7 +36,6 @@ lastPtTmp = [0,0]
 actualForm = None
 pyg.key.set_repeat(1)
 list_GraphicForm[0].forme.rotation(pi/4)
-print(list_GraphicForm[0].forme.get_sommets())
 
 while running:
 

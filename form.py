@@ -58,21 +58,22 @@ class Form:
 		return isOn
 
 	def rotation(self, w):
+		rotatedSommets = []
+		p = self.ptMoyen()
 
-	    rotatedSommets = self.sommets
-
-	    for i in range(len(self.sommets)):
-	        rotatedSommets[i][0] = int(self.sommets[i][0] * cos(w) - sin(w) * self.sommets[i][1])
-	        rotatedSommets[i][1] = int(self.sommets[i][0] * sin(w) + cos(w) * self.sommets[i][1])
+		for i in range(len(self.sommets)):
+			x = int((self.sommets[i][0] - p[0]) * cos(w) - sin(w) * (self.sommets[i][1] - p[1])) + p[0]
+			y = int((self.sommets[i][0] - p[0]) * sin(w) + cos(w) * (self.sommets[i][1] - p[1])) + p[1]
+			rotatedSommets.append([x, y])
 
 		self.sommets = rotatedSommets
 		[minX, minY] = self.minXY()
 
-	    for i in range(len(rotatedSommets)):
-	        rotatedSommets[i][0] -= xmin
-	        rotatedSommets[i][1] -= ymin
+		for i in range(len(rotatedSommets)):
+			rotatedSommets[i][0] -= minX
+			rotatedSommets[i][1] -= minY
 
-	    self.sommets = rotatedSommets
+		self.sommets = rotatedSommets
 
 	def minXY(self):
 		x = self.sommets[0][0]
