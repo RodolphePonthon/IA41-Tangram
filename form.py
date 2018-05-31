@@ -57,6 +57,32 @@ class Form:
 
 		return isOn
 
+	def rotation(self, w):
+
+	    rotatedSommets = self.sommets
+
+	    for i in range(len(self.sommets)):
+	        rotatedSommets[i][0] = int(self.sommets[i][0] * cos(w) - sin(w) * self.sommets[i][1])
+	        rotatedSommets[i][1] = int(self.sommets[i][0] * sin(w) + cos(w) * self.sommets[i][1])
+
+		self.sommets = rotatedSommets
+		[minX, minY] = self.minXY()
+
+	    for i in range(len(rotatedSommets)):
+	        rotatedSommets[i][0] -= xmin
+	        rotatedSommets[i][1] -= ymin
+
+	    self.sommets = rotatedSommets
+
+	def minXY(self):
+		x = self.sommets[0][0]
+		y = self.sommets[0][1]
+		for sommet in self.sommets:
+			if sommet[0] < x: x = sommet[0]
+			if sommet[1] < y: y = sommet[1]
+
+		return [x, y]
+
 def equation(first_point, second_point):
 	if second_point[0] == first_point[0]:
 		equation = [second_point[0]]
@@ -97,22 +123,3 @@ def equation_analyze(eq, p):
 		dir_x = diff_x / abs(diff_x) if diff_x != 0 else 0
 		dir_y = (diff_y) / abs(diff_y) if diff_y != 0 else 0
 	return[eq, dir_x, dir_y]
-
-def rotation(self, w):
-
-    [xm, ym] = self.ptMoyen()
-    rotatedSommets = self.sommets
-
-    for i in range(len(self.sommets)-1):
-        rotatedSommets[i][0] = self.sommets[i][0] * cos(w) - sin(w) * self.sommets[i][1]
-        rotatedSommets[i][1] = self.sommets[i][0] * sin(w) + cos(w) * self.sommets[i][1]
-
-    self.sommets = rotatedSommets
-    [newXm, newYm] = self.ptMoyen()
-
-    decalx = newXm - xm
-    decaly = newYm - ym
-
-    for i in range(len(rotatedSommets)-1):
-        rotatedSommets[i][0] = rotatedSommets[i][0] + decalx
-        rotatedSommets[i][1] = rotatedSommets[i][1] + decaly

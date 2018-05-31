@@ -1,15 +1,17 @@
 import pygame as pyg
 from form import Form
 from GraphicForm import GraphicForm
+from math import pi
 
 def draw(screen, gForm):
+    gForm.update()
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
 pyg.init()
 screen = pyg.display.set_mode((800, 600))
 pyg.display.set_caption('IA41 - Tangram')
 
-screen.fill((255,255,255))
+screen.fill((200,200,200))
 running = True
 
 triangle = Form([[0,0],[0,100],[50,50]])
@@ -26,8 +28,6 @@ list_GraphicForm = []
 for form in list_forms:
     list_GraphicForm.append(GraphicForm(form, 10, 150))
 
-
-
 move = False
 ptInitial = [0,0]
 ptFinal = [0,0]
@@ -35,6 +35,8 @@ ptTmp = [0,0]
 lastPtTmp = [0,0]
 actualForm = None
 pyg.key.set_repeat(1)
+list_GraphicForm[0].forme.rotation(pi/4)
+print(list_GraphicForm[0].forme.get_sommets())
 
 while running:
 
@@ -59,13 +61,13 @@ while running:
         elif pyg.mouse.get_pressed()[0] and move:
             ptTmp = pyg.mouse.get_pos()
             actualForm.move(lastPtTmp, ptTmp)
-            screen.fill((255,255,255))
+            screen.fill((200,200,200))
             lastPtTmp = ptTmp
 
         elif evt.type == pyg.MOUSEBUTTONUP and move:
             ptFinal = pyg.mouse.get_pos()
             actualForm.move(lastPtTmp, ptFinal)
-            screen.fill((255,255,255))
+            screen.fill((200,200,200))
             move = False
 
         elif evt.type == pyg.KEYDOWN:
