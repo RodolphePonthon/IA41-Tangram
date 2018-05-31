@@ -24,22 +24,24 @@ list_forms = [triangle, triangle2, triangle3, triangle4, triangle5, carre, para]
 
 list_GraphicForm = []
 for form in list_forms:
-    list_GraphicForm.append(GraphicForm(form, 0, 0))
+    list_GraphicForm.append(GraphicForm(form, 10, 150))
 
 
 
 move = False
 ptInitial = [0,0]
 ptFinal = [0,0]
+ptTmp = [0,0]
+lastPtTmp = [0,0]
 actualForm = None
+pyg.key.set_repeat(1)
 
 while running:
 
-
-    pyg.display.flip()
-
     for gForm in list_GraphicForm:
         draw(screen, gForm)
+
+    pyg.display.flip()
 
     for evt in pyg.event.get():
         if evt.type == pyg.QUIT:
@@ -51,26 +53,24 @@ while running:
                     if graphicForm.isOn(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
                         ptInitial = pyg.mouse.get_pos()
                         actualForm = graphicForm
+                        lastPtTmp = ptInitial
                         move = True
 
-        elif evt.type == pyg.MOUSEBUTTONUP and move == True:
+        elif pyg.mouse.get_pressed()[0] and move:
+            ptTmp = pyg.mouse.get_pos()
+            actualForm.move(lastPtTmp, ptTmp)
+            screen.fill((255,255,255))
+            lastPtTmp = ptTmp
+
+        elif evt.type == pyg.MOUSEBUTTONUP and move:
             ptFinal = pyg.mouse.get_pos()
-            actualForm.move(ptInitial, ptFinal)
+            actualForm.move(lastPtTmp, ptFinal)
             screen.fill((255,255,255))
             move = False
 
         elif evt.type == pyg.KEYDOWN:
             if evt.key == pyg.K_ESCAPE:
                 running = False
-
-            if evt.key == pyg.K_SPACE:
-                formeRect.x += 1
-                screen.fill(white)
-                screen.blit(dessinSurface, dessinRect)
-                screen.blit(rangementSurface, rangementRect)
-                screen.blit(formeSurface, formeRect)
-
-
 
 pyg.quit()
 exit()
