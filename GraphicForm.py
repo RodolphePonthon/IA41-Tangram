@@ -15,9 +15,7 @@ class GraphicForm:
         #initialisation Rectangle
         self.formeRect = self.formeSurface.get_rect()
         p = self.forme.ptMoyen()
-        for sommet in self.forme.sommets:
-            sommet[0] += size/2/(size/self.forme.scale) - p[0]
-            sommet[1] += size/2/(size/self.forme.scale)  - p[1]
+        self.initialize()
         self.formeRect.y = posY + (p[1] - self.forme.ptMoyen()[1]) * (size/self.forme.scale)
         self.formeRect.x = posX + (p[0] - self.forme.ptMoyen()[0]) * (size/self.forme.scale)
         self.initialPoint = [self.formeRect.x, self.formeRect.y]
@@ -31,6 +29,14 @@ class GraphicForm:
         offsetY = ptFinal[1] - ptInitial[1]
         self.formeRect.x += offsetX
         self.formeRect.y += offsetY
+
+    def initialize(self):
+        self.forme.initialize()
+        size = self.forme.new_scale
+        p = self.forme.ptMoyen()
+        for sommet in self.forme.sommets:
+            sommet[0] += round(size/2/(size/self.forme.scale) - p[0])
+            sommet[1] += round(size/2/(size/self.forme.scale)  - p[1])
 
     def update(self):
         self.formeSurface.fill((0,0,0))

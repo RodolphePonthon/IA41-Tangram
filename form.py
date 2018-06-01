@@ -6,8 +6,12 @@ class Form:
 
 	def __init__(self, sommets, new_scale = 100):
 		self.scale = 100
+		self.initial_sommets = sommets
 		self.sommets = sommets
 		self.new_scale = new_scale
+
+	def initialize(self):
+		self.sommets = self.initial_sommets
 
 	def get_sommets(self, size = 100):
 		sommets = []

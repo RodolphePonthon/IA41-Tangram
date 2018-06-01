@@ -115,6 +115,7 @@ def main():
                     actualForm.move(lastPtTmp, ptFinal)
                 else:
                     actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint)
+                    actualForm.initialize()
                 screen.fill((200,200,200))
                 actualForm = None
                 move = False
