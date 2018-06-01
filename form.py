@@ -1,11 +1,13 @@
 #!--*--coding:utf-8--*--
+
 from math import cos, sin
 
 class Form:
 
-	def __init__(self, sommets):
+	def __init__(self, sommets, new_scale = 100):
 		self.scale = 100
 		self.sommets = sommets
+		self.new_scale = new_scale
 
 	def get_sommets(self, size = 100):
 		sommets = []
@@ -33,7 +35,7 @@ class Form:
 		isSelected = False
 		sommets = self.get_sommets(size)
 		for sommet in sommets:
-			if abs(sommet[0] - x)**2 + abs(sommet[1] - y)**2  <= r**2:
+			if (sommet[0] - x)**2 + (sommet[1] - y)**2  <= r**2:
 				isSelected = True
 				break
 

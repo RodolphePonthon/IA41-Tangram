@@ -1,24 +1,29 @@
+#!--*--coding:utf-8--*--
+
 from form import Form
 import pygame as pyg
 
 class GraphicForm:
-    def __init__(self, form, posX, posY):
+    def __init__(self, form, posX, posY, size):
+        size = float(size)
         self.forme = form
+        self.forme.new_scale = size
         #initialisation Surface
-        self.formeSurface = pyg.Surface((300, 300))
+        self.formeSurface = pyg.Surface((size, size))
         self.formeSurface.fill((0,0,0))
         self.formeSurface.set_colorkey((0,0,0))
         #initialisation Rectangle
         self.formeRect = self.formeSurface.get_rect()
         p = self.forme.ptMoyen()
         for sommet in self.forme.sommets:
-            sommet[0] += round(self.formeSurface.get_width()/2/(self.formeSurface.get_width()/self.forme.scale) - p[0], 3)
-            sommet[1] += round(self.formeSurface.get_height()/2/(self.formeSurface.get_height()/self.forme.scale)  - p[1], 3)
-        self.formeRect.y = posY + (p[1] - self.forme.ptMoyen()[1]) * (self.formeSurface.get_width()/self.forme.scale)
-        self.formeRect.x = posX + (p[0] - self.forme.ptMoyen()[0]) * (self.formeSurface.get_width()/self.forme.scale)
+            sommet[0] += size/2/(size/self.forme.scale) - p[0]
+            sommet[1] += size/2/(size/self.forme.scale)  - p[1]
+        self.formeRect.y = posY + (p[1] - self.forme.ptMoyen()[1]) * (size/self.forme.scale)
+        self.formeRect.x = posX + (p[0] - self.forme.ptMoyen()[0]) * (size/self.forme.scale)
+        self.initialPoint = [self.formeRect.x, self.formeRect.y]
 
-        pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
-        pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(self.formeSurface.get_height()),3)
+        pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(size))
+        pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(size),3)
 
     def move(self, ptInitial, ptFinal):
 
@@ -32,6 +37,9 @@ class GraphicForm:
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
         pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(self.formeSurface.get_height()),3)
 
+    def draw_only_fill(self):
+        self.formeSurface.fill((0,0,0))
+        pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
 
     def isOn(self, p, size = 100):
         return self.forme.isOn([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)
