@@ -23,14 +23,14 @@ class GraphicForm:
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(size))
         pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(size),3)
 
-    def move(self, ptInitial, ptFinal):
+    def move(self, ptInitial, ptFinal, width, height):
 
         offsetX = ptFinal[0] - ptInitial[0]
         offsetY = ptFinal[1] - ptInitial[1]
-        
-        if(not self.isBorderCollision(offsetX, offsetY, 800, 600)):
-        	self.formeRect.x += offsetX
-        	self.formeRect.y += offsetY
+
+        offsetX, offsetY = self.offsetBorderCollision(offsetX, offsetY, width, height)
+        self.formeRect.x += offsetX
+        self.formeRect.y += offsetY
 
     def get_sommets(self, size = 100):
         sommets = []
@@ -41,14 +41,31 @@ class GraphicForm:
             sommets.append([x, y])
 
         return sommets
-       
-    def isBorderCollision(self, offsetX, offsetY, width, height):
-    	for sommet in self.get_sommets(self.forme.new_scale):
-    		newX = sommet[0] + offsetX
-    		newY = sommet[1] + offsetY
-    		if(newX > width-1 or newX < 1) or (newY > height-1 or newY < 1):
-    			return True
-    	return False
+
+    def ptMoyen(self, size = 100):
+        x, y = 0, 0
+        for sommet in self.get_sommets(size):
+            x += sommet[0]
+            y += sommet[1]
+
+        l = len(self.forme.sommets)
+        y /= l
+        x /= l
+        return[x, y]
+
+    def offsetBorderCollision(self, offsetX, offsetY, width, height):
+        for sommet in self.get_sommets(self.forme.new_scale):
+            newX = sommet[0] + offsetX
+            newY = sommet[1] + offsetY
+            if newX > width-1:
+                offsetX = width - 1 - sommet[0]
+            if newX < 1:
+                offsetX = 1 - sommet[0]
+            if newY > height-1:
+                offsetY = height - 1 - sommet[1]
+            if newY < 1:
+                offsetY = 1 - sommet[1]
+        return offsetX, offsetY
 
     def initialize(self):
         self.forme.initialize()

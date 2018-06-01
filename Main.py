@@ -38,11 +38,14 @@ def main():
     pyg.init()
     width = 800
     height = 600
+    fps = 30
     screen = pyg.display.set_mode((width, height))
     screen_rect = screen.get_rect()
     screen_rect.x = screen_rect.y = 0
     pyg.display.set_caption('IA41 - Tangram')
     screen.fill((200,200,200))
+    clock = pyg.time.Clock()
+    clock.tick(fps)
 
     #Initialize variables
     list_GraphicForm = init_forms(height)
@@ -89,12 +92,13 @@ def main():
 
             elif pyg.mouse.get_pressed()[0] and move:
                 ptTmp = pyg.mouse.get_pos()
-                actualForm.move(lastPtTmp, ptTmp)
+                actualForm.move(lastPtTmp, ptTmp, width, height)
                 for i in range(len(list_GraphicForm)-1):
                     formTmp = list_GraphicForm[i]
-                    if zoneDessin.isOn(actualForm) and (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
-                        actualForm.move(ptTmp, lastPtTmp)
-                        break
+                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):     
+                        if actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height()):
+                            actualForm.move(ptTmp, lastPtTmp, width, height)
+                            break
                 screen.fill((200,200,200))
                 lastPtTmp = ptTmp
 
@@ -117,9 +121,9 @@ def main():
                     else:
                         ptFinal = pyg.mouse.get_pos()
                 if zoneDessin.isOn(actualForm):
-                    actualForm.move(lastPtTmp, ptFinal)
+                    actualForm.move(lastPtTmp, ptFinal, width, height)
                 else:
-                    actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint)
+                    actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint, width, height)
                     actualForm.initialize()
                 screen.fill((200,200,200))
                 actualForm = None
