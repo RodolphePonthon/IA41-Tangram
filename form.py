@@ -72,7 +72,7 @@ class Form:
 
 	def rotation(self, w):
 		rotatedSommets = []
-		p = self.ptMoyen()
+		p = [self.scale/2, self.scale/2]
 
 		for i in range(len(self.sommets)):
 			x = (self.sommets[i][0] - p[0]) * cos(w) - sin(w) * (self.sommets[i][1] - p[1]) + p[0]
@@ -80,15 +80,6 @@ class Form:
 			rotatedSommets.append([x, y])
 
 		self.sommets = rotatedSommets
-
-	def minXY(self):
-		x = self.sommets[0][0]
-		y = self.sommets[0][1]
-		for sommet in self.sommets:
-			if sommet[0] < x: x = sommet[0]
-			if sommet[1] < y: y = sommet[1]
-
-		return [x, y]
 
 def equation(first_point, second_point):
 	if second_point[0] == first_point[0]:
@@ -130,3 +121,19 @@ def equation_analyze(eq, p):
 		dir_x = diff_x / abs(diff_x) if diff_x != 0 else 0
 		dir_y = (diff_y) / abs(diff_y) if diff_y != 0 else 0
 	return[eq, dir_x, dir_y]
+
+def round25(n):
+	d = n - int(n)
+	n-=d
+	d*=100
+	d//=25/2
+	n+=round(d/2+0.1)*25/100
+	return n
+
+def round10(n):
+	d = n - int(n)
+	n-=d
+	d*=100
+	d/=10/2
+	n+=round(d/2+0.1)/10/100
+	return n

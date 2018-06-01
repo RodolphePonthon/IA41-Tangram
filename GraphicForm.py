@@ -12,8 +12,8 @@ class GraphicForm:
         self.formeRect = self.formeSurface.get_rect()
         p = self.forme.ptMoyen()
         for sommet in self.forme.sommets:
-            sommet[0] += self.formeSurface.get_width()/2/(self.formeSurface.get_width()/self.forme.scale) - p[0]
-            sommet[1] += self.formeSurface.get_height()/2/(self.formeSurface.get_height()/self.forme.scale)  - p[1]
+            sommet[0] += round(self.formeSurface.get_width()/2/(self.formeSurface.get_width()/self.forme.scale) - p[0], 3)
+            sommet[1] += round(self.formeSurface.get_height()/2/(self.formeSurface.get_height()/self.forme.scale)  - p[1], 3)
         self.formeRect.y = posY + (p[1] - self.forme.ptMoyen()[1]) * (self.formeSurface.get_width()/self.forme.scale)
         self.formeRect.x = posX + (p[0] - self.forme.ptMoyen()[0]) * (self.formeSurface.get_width()/self.forme.scale)
 
