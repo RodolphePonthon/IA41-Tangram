@@ -30,7 +30,7 @@ for form in list_forms:
 
 move = False
 turn = False
-interval = 180
+interval = 20
 ptInitial = [0,0]
 ptFinal = [0,0]
 ptTmp = [0,0]
@@ -72,9 +72,11 @@ while running:
 
         elif pyg.mouse.get_pressed()[0] and turn:
             ptTmp = pyg.mouse.get_pos()
-            angle = lastPtTmp[1] - ptTmp[1]
-            if angle != 0:
-                actualForm.forme.rotation(pi/(interval/angle))
+            angle = (lastPtTmp[1] - ptTmp[1])
+            angle /= 10
+            if abs(angle) > 1:
+                print(angle)
+                actualForm.forme.rotation((angle/abs(angle))*pi/interval)
                 screen.fill((200,200,200))
                 lastPtTmp = ptTmp
 
@@ -88,8 +90,9 @@ while running:
         elif evt.type == pyg.MOUSEBUTTONUP and turn:
             ptTmp = pyg.mouse.get_pos()
             angle = lastPtTmp[1] - ptTmp[1]
-            if angle != 0:
-                actualForm.forme.rotation(pi/(interval/angle))
+            angle /= 10
+            if abs(angle) > 1:
+                actualForm.forme.rotation((angle/abs(angle))*pi/interval)
                 screen.fill((200,200,200))
             actualForm = None
             turn = False
