@@ -27,8 +27,10 @@ class GraphicForm:
 
         offsetX = ptFinal[0] - ptInitial[0]
         offsetY = ptFinal[1] - ptInitial[1]
-        self.formeRect.x += offsetX
-        self.formeRect.y += offsetY
+        
+        if(not self.isBorderCollision(offsetX, offsetY, 800, 600)):
+        	self.formeRect.x += offsetX
+        	self.formeRect.y += offsetY
 
     def get_sommets(self, size = 100):
         sommets = []
@@ -39,6 +41,14 @@ class GraphicForm:
             sommets.append([x, y])
 
         return sommets
+       
+    def isBorderCollision(self, offsetX, offsetY, width, height):
+    	for sommet in self.get_sommets(self.forme.new_scale):
+    		newX = sommet[0] + offsetX
+    		newY = sommet[1] + offsetY
+    		if(newX > width-1 or newX < 1) or (newY > height-1 or newY < 1):
+    			return True
+    	return False
 
     def initialize(self):
         self.forme.initialize()
