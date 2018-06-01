@@ -30,13 +30,23 @@ class GraphicForm:
         self.formeRect.x += offsetX
         self.formeRect.y += offsetY
 
+    def get_sommets(self, size = 100):
+        sommets = []
+        rect = self.formeRect
+        for sommet in self.forme.get_sommets(size):
+            x = sommet[0] + rect.x
+            y = sommet[1] + rect.y
+            sommets.append([x, y])
+
+        return sommets
+
     def initialize(self):
         self.forme.initialize()
         size = self.forme.new_scale
         p = self.forme.ptMoyen()
         for sommet in self.forme.sommets:
-            sommet[0] += round(size/2/(size/self.forme.scale) - p[0])
-            sommet[1] += round(size/2/(size/self.forme.scale)  - p[1])
+            sommet[0] += round(size/2/(size/self.forme.scale) - p[0],1)
+            sommet[1] += round(size/2/(size/self.forme.scale)  - p[1],1)
 
     def update(self):
         self.formeSurface.fill((0,0,0))
@@ -52,3 +62,12 @@ class GraphicForm:
 
     def isCornerSelected(self, p, size = 100):
         return self.forme.isCornerSelected([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)
+
+    def isCutting(self, gForm, size = 100):
+        isCutting = False
+        for sommet in self.get_sommets(size):
+            if gForm.isOn([sommet[0], sommet[1]], size):
+                isCutting = True
+                break
+
+        return isCutting

@@ -76,6 +76,45 @@ class Form:
 
 		return isOn
 
+	def isCutting(self, form, size = 100):
+		isCutting = False
+		#size = float(size)/self.scale
+		#isCutting = False
+		#equations_self = self.build_equations(size)
+		#equations_form = form.build_equations(size)
+
+		#for eq_self in equations_self:
+		#	if isCutting: break
+		#	for eq_form in equations_form:
+		#		if isCutting: break
+		#		if len(eq_self) == 3 and len(eq_form) == 3:
+		#			pass
+		#		elif len(eq_self) == 3 and len(eq_form) != 3:
+
+					#C LA PUTAIN DE COORDONNEE DANS LE CADRE QUE TUTILISE BORDEL DE MERDE
+
+		#			section = range(int(eq_self[1][1]*size), int(eq_self[2][1]*size) + 2)
+		#			isCutting = equation_solve(eq_form, eq_self[0]*size) in section
+		#		elif len(eq_form) == 3 and len(eq_self) != 3:
+		#			section = range(int(eq_form[1][1]*size), int(eq_form[2][1]*size) + 2)
+		#			print(section)
+		#			isCutting = equation_solve(eq_self, eq_form[0]*size) in section
+		#		else:
+		#			sectionX = range(int(eq_form[2][0]*size), int(eq_form[3][0]*size) + 2)
+		#			sectionY = range(int(eq_self[2][1]*size), int(eq_self[3][1]*size) + 2)
+		#			for x in sectionX :
+		#				if equation_solve(eq_self, eq_form[0]*size) in sectionY:
+		#					isCutting = True
+		#					break
+
+		return isCutting
+
+
+		# y = a1*x + b1
+		# y = a2*x + b2
+		# x = (y-b1) / a1
+		# y = (a2*b1/a1 + b2)/(1-a2/a1)
+
 	def rotation(self, w):
 		rotatedSommets = []
 		p = [self.scale/2, self.scale/2]
@@ -89,21 +128,21 @@ class Form:
 
 def equation(first_point, second_point):
 	if second_point[0] == first_point[0]:
-		equation = [second_point[0]]
+		equation = [second_point[0], first_point, second_point]
 	elif second_point[1] == first_point[1]:
-		equation = [0, second_point[1]]
+		equation = [0, second_point[1], first_point, second_point]
 	elif first_point[0] == 0:
 		b = first_point[1]
 		a = (second_point[1] - b) / second_point[0]
-		equation = [a,b]
+		equation = [a,b, first_point, second_point]
 	elif second_point[0] == 0:
 		b = second_point[1]
 		a = (first_point[1] - b) / first_point[0]
-		equation = [a,b]
+		equation = [a,b, first_point, second_point]
 	else:
 		a = (second_point[1] - first_point[1]) / (second_point[0] - first_point[0])
 		b = first_point[1] - a * first_point[0]
-		equation = [a,b]
+		equation = [a,b, first_point, second_point]
 
 	return equation
 
@@ -111,7 +150,7 @@ def equation_analyze(eq, p):
 	vect_eq = [eq]
 	dir_x, dir_y = 0, 0
 
-	if len(eq) == 1:
+	if len(eq) == 3:
 		diff_x = (p[0] - eq[0])
 		dir_x = diff_x / abs(diff_x) if diff_x != 0 else 0
 		dir_y = 0
@@ -128,18 +167,7 @@ def equation_analyze(eq, p):
 		dir_y = (diff_y) / abs(diff_y) if diff_y != 0 else 0
 	return[eq, dir_x, dir_y]
 
-def round25(n):
-	d = n - int(n)
-	n-=d
-	d*=100
-	d//=25/2
-	n+=round(d/2+0.1)*25/100
-	return n
-
-def round10(n):
-	d = n - int(n)
-	n-=d
-	d*=100
-	d/=10/2
-	n+=round(d/2+0.1)/10/100
-	return n
+def equation_solve(eq, x):
+	a = eq[0]
+	b = eq[1]
+	return a*x + b

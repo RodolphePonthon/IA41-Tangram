@@ -4,13 +4,10 @@ import pygame as pyg
 from form import Form
 from GraphicForm import GraphicForm
 from math import pi
-from ctypes import windll
 from os import environ
 from zone import Zone
 
 environ['SDL_VIDEO_CENTERED'] = '1'
-
-user32 = windll.user32
 
 def draw(screen, gForm):
     gForm.update()
@@ -39,8 +36,6 @@ def gestion_event(evt):
 def main():
     #Initialize screen
     pyg.init()
-    full_width = user32.GetSystemMetrics(0)
-    full_height = user32.GetSystemMetrics(1)
     width = 800
     height = 600
     screen = pyg.display.set_mode((width, height))
@@ -82,20 +77,24 @@ def main():
                 if evt.type == pyg.MOUSEBUTTONDOWN:
                     for graphicForm in list_GraphicForm:
                         if graphicForm.isOn(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
+                            ptInitial = pyg.mouse.get_pos()
+                            actualForm = graphicForm
+                            lastPtTmp = ptInitial
+                            #Put the actual form at the end of the list to be printed last
+                            list_GraphicForm[len(list_GraphicForm) - 1], list_GraphicForm[list_GraphicForm.index(actualForm)] = list_GraphicForm[list_GraphicForm.index(actualForm)], list_GraphicForm[len(list_GraphicForm) - 1]
                             if graphicForm.isCornerSelected(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
-                                ptInitial = pyg.mouse.get_pos()
-                                actualForm = graphicForm
-                                lastPtTmp = ptInitial
                                 turn = True
                             else:
-                                ptInitial = pyg.mouse.get_pos()
-                                actualForm = graphicForm
-                                lastPtTmp = ptInitial
                                 move = True
 
             elif pyg.mouse.get_pressed()[0] and move:
                 ptTmp = pyg.mouse.get_pos()
                 actualForm.move(lastPtTmp, ptTmp)
+                for i in range(len(list_GraphicForm)-1):
+                    formTmp = list_GraphicForm[i]
+                    if zoneDessin.isOn(actualForm) and (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
+                        actualForm.move(ptTmp, lastPtTmp)
+                        break
                 screen.fill((200,200,200))
                 lastPtTmp = ptTmp
 
@@ -110,7 +109,13 @@ def main():
                     lastPtTmp = ptTmp
 
             elif evt.type == pyg.MOUSEBUTTONUP and move:
-                ptFinal = pyg.mouse.get_pos()
+                for i in range(len(list_GraphicForm)-1):
+                    formTmp = list_GraphicForm[i]
+                    if zoneDessin.isOn(actualForm) and (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
+                        ptFinal = lastPtTmp
+                        break
+                    else:
+                        ptFinal = pyg.mouse.get_pos()
                 if zoneDessin.isOn(actualForm):
                     actualForm.move(lastPtTmp, ptFinal)
                 else:
