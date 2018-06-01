@@ -10,8 +10,12 @@ class GraphicForm:
         self.formeSurface.set_colorkey((0,0,0))
         #initialisation Rectangle
         self.formeRect = self.formeSurface.get_rect()
-        self.formeRect.y = posY
-        self.formeRect.x = posX
+        p = self.forme.ptMoyen()
+        for sommet in self.forme.sommets:
+            sommet[0] += self.formeSurface.get_width()/2/(self.formeSurface.get_width()/self.forme.scale) - p[0]
+            sommet[1] += self.formeSurface.get_height()/2/(self.formeSurface.get_height()/self.forme.scale)  - p[1]
+        self.formeRect.y = posY + (p[1] - self.forme.ptMoyen()[1]) * (self.formeSurface.get_width()/self.forme.scale)
+        self.formeRect.x = posX + (p[0] - self.forme.ptMoyen()[0]) * (self.formeSurface.get_width()/self.forme.scale)
 
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
         pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(self.formeSurface.get_height()),3)
@@ -31,3 +35,6 @@ class GraphicForm:
 
     def isOn(self, p, size = 100):
         return self.forme.isOn([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)
+
+    def isCornerSelected(self, p, size = 100):
+        return self.forme.isCornerSelected([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)

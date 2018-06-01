@@ -29,13 +29,14 @@ for form in list_forms:
     list_GraphicForm.append(GraphicForm(form, 10, 150))
 
 move = False
+turn = False
+interval = 180
 ptInitial = [0,0]
 ptFinal = [0,0]
 ptTmp = [0,0]
 lastPtTmp = [0,0]
 actualForm = None
-pyg.key.set_repeat(1)
-list_GraphicForm[0].forme.rotation(pi/4)
+pyg.key.set_repeat(True)
 
 while running:
 
@@ -52,10 +53,16 @@ while running:
             if evt.type == pyg.MOUSEBUTTONDOWN:
                 for graphicForm in list_GraphicForm:
                     if graphicForm.isOn(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
-                        ptInitial = pyg.mouse.get_pos()
-                        actualForm = graphicForm
-                        lastPtTmp = ptInitial
-                        move = True
+                        if graphicForm.isCornerSelected(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
+                            ptInitial = pyg.mouse.get_pos()
+                            actualForm = graphicForm
+                            lastPtTmp = ptInitial
+                            turn = True
+                        else:
+                            ptInitial = pyg.mouse.get_pos()
+                            actualForm = graphicForm
+                            lastPtTmp = ptInitial
+                            move = True
 
         elif pyg.mouse.get_pressed()[0] and move:
             ptTmp = pyg.mouse.get_pos()
@@ -63,11 +70,29 @@ while running:
             screen.fill((200,200,200))
             lastPtTmp = ptTmp
 
+        elif pyg.mouse.get_pressed()[0] and turn:
+            ptTmp = pyg.mouse.get_pos()
+            angle = lastPtTmp[1] - ptTmp[1]
+            if angle != 0:
+                actualForm.forme.rotation(pi/(interval/angle))
+                screen.fill((200,200,200))
+                lastPtTmp = ptTmp
+
         elif evt.type == pyg.MOUSEBUTTONUP and move:
             ptFinal = pyg.mouse.get_pos()
             actualForm.move(lastPtTmp, ptFinal)
             screen.fill((200,200,200))
+            actualForm = None
             move = False
+
+        elif evt.type == pyg.MOUSEBUTTONUP and turn:
+            ptTmp = pyg.mouse.get_pos()
+            angle = lastPtTmp[1] - ptTmp[1]
+            if angle != 0:
+                actualForm.forme.rotation(pi/(interval/angle))
+                screen.fill((200,200,200))
+            actualForm = None
+            turn = False
 
         elif evt.type == pyg.KEYDOWN:
             if evt.key == pyg.K_ESCAPE:

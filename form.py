@@ -26,6 +26,19 @@ class Form:
 	    x /= l
 	    return[x, y]
 
+	def isCornerSelected(self, p, size = 100):
+		x = p[0]
+		y = p[1]
+		r = 20
+		isSelected = False
+		sommets = self.get_sommets(size)
+		for sommet in sommets:
+			if abs(sommet[0] - x)**2 + abs(sommet[1] - y)**2  <= r**2:
+				isSelected = True
+				break
+
+		return isSelected
+
 	def build_equations(self, size = 100):
 		equations = []
 		sommets = self.get_sommets(size)
@@ -62,16 +75,9 @@ class Form:
 		p = self.ptMoyen()
 
 		for i in range(len(self.sommets)):
-			x = int((self.sommets[i][0] - p[0]) * cos(w) - sin(w) * (self.sommets[i][1] - p[1])) + p[0]
-			y = int((self.sommets[i][0] - p[0]) * sin(w) + cos(w) * (self.sommets[i][1] - p[1])) + p[1]
+			x = (self.sommets[i][0] - p[0]) * cos(w) - sin(w) * (self.sommets[i][1] - p[1]) + p[0]
+			y = (self.sommets[i][0] - p[0]) * sin(w) + cos(w) * (self.sommets[i][1] - p[1]) + p[1]
 			rotatedSommets.append([x, y])
-
-		self.sommets = rotatedSommets
-		[minX, minY] = self.minXY()
-
-		for i in range(len(rotatedSommets)):
-			rotatedSommets[i][0] -= minX
-			rotatedSommets[i][1] -= minY
 
 		self.sommets = rotatedSommets
 
