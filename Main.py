@@ -1,13 +1,19 @@
+#!--*--coding:utf-8--*--
+
 import pygame as pyg
 from form import Form
 from GraphicForm import GraphicForm
 from math import pi
+from os import environ
+from zone import Zone
+
+environ['SDL_VIDEO_CENTERED'] = '1'
 
 def draw(screen, gForm):
     gForm.update()
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
-def init_forms():
+def init_forms(size):
     triangle = Form([[0,0],[0,100],[50,50]])
     triangle2 = Form([[0,0],[50,50],[100,0]])
     triangle3 = Form([[75,25],[100,0],[100,50]])
@@ -20,7 +26,7 @@ def init_forms():
 
     list_GraphicForm = []
     for form in list_forms:
-        list_GraphicForm.append(GraphicForm(form, 10, 150))
+        list_GraphicForm.append(GraphicForm(form, 10, int(size/4), int(size/2)))
 
     return list_GraphicForm
 
@@ -30,12 +36,19 @@ def gestion_event(evt):
 def main():
     #Initialize screen
     pyg.init()
-    screen = pyg.display.set_mode((800, 600))
+    width = 800
+    height = 600
+    fps = 30
+    screen = pyg.display.set_mode((width, height))
+    screen_rect = screen.get_rect()
+    screen_rect.x = screen_rect.y = 0
     pyg.display.set_caption('IA41 - Tangram')
     screen.fill((200,200,200))
+    clock = pyg.time.Clock()
+    clock.tick(fps)
 
     #Initialize variables
-    list_GraphicForm = init_forms()
+    list_GraphicForm = init_forms(height)
     running = True
     move = False
     turn = False
@@ -47,9 +60,13 @@ def main():
     lastPtTmp = [0,0]
     actualForm = None
     pyg.key.set_repeat(True)
+    zoneDessin = Zone((0, 0, 100), (width/2, 0), (width/2, height))
 
     while running:
+        #Place zones
+        screen.blit(zoneDessin.surface, zoneDessin.rect)
 
+        #Draw Forms
         for gForm in list_GraphicForm:
             draw(screen, gForm)
 
@@ -63,20 +80,25 @@ def main():
                 if evt.type == pyg.MOUSEBUTTONDOWN:
                     for graphicForm in list_GraphicForm:
                         if graphicForm.isOn(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
+                            ptInitial = pyg.mouse.get_pos()
+                            actualForm = graphicForm
+                            lastPtTmp = ptInitial
+                            #Put the actual form at the end of the list to be printed last
+                            list_GraphicForm[len(list_GraphicForm) - 1], list_GraphicForm[list_GraphicForm.index(actualForm)] = list_GraphicForm[list_GraphicForm.index(actualForm)], list_GraphicForm[len(list_GraphicForm) - 1]
                             if graphicForm.isCornerSelected(pyg.mouse.get_pos(), graphicForm.formeSurface.get_height()):
-                                ptInitial = pyg.mouse.get_pos()
-                                actualForm = graphicForm
-                                lastPtTmp = ptInitial
                                 turn = True
                             else:
-                                ptInitial = pyg.mouse.get_pos()
-                                actualForm = graphicForm
-                                lastPtTmp = ptInitial
                                 move = True
 
             elif pyg.mouse.get_pressed()[0] and move:
                 ptTmp = pyg.mouse.get_pos()
-                actualForm.move(lastPtTmp, ptTmp)
+                actualForm.move(lastPtTmp, ptTmp, width, height)
+                for i in range(len(list_GraphicForm)-1):
+                    formTmp = list_GraphicForm[i]
+                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):     
+                        if actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height()):
+                            actualForm.move(ptTmp, lastPtTmp, width, height)
+                            break
                 screen.fill((200,200,200))
                 lastPtTmp = ptTmp
 
@@ -91,8 +113,18 @@ def main():
                     lastPtTmp = ptTmp
 
             elif evt.type == pyg.MOUSEBUTTONUP and move:
-                ptFinal = pyg.mouse.get_pos()
-                actualForm.move(lastPtTmp, ptFinal)
+                for i in range(len(list_GraphicForm)-1):
+                    formTmp = list_GraphicForm[i]
+                    if zoneDessin.isOn(actualForm) and (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
+                        ptFinal = lastPtTmp
+                        break
+                    else:
+                        ptFinal = pyg.mouse.get_pos()
+                if zoneDessin.isOn(actualForm):
+                    actualForm.move(lastPtTmp, ptFinal, width, height)
+                else:
+                    actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint, width, height)
+                    actualForm.initialize()
                 screen.fill((200,200,200))
                 actualForm = None
                 move = False
