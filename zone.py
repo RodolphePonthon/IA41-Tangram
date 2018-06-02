@@ -5,14 +5,14 @@ from form import Form
 
 class Zone:
 
-	def __init__(self, color, p, size, authorized = True):
+	def __init__(self, color, position, size, authorized = True):
 		self.size = size
-		self.position = p
+		self.position = position
 		self.authorized = authorized
 		self.surface = pyg.Surface((size[0], size[1]))
 		self.surface.fill(color)
 		self.rect = self.surface.get_rect()
-		self.rect.x, self.rect.y = p[0], p[1]
+		self.rect.x, self.rect.y = position[0], position[1]
 
 	def isOn(self, graphform):
 		on = True

@@ -17,7 +17,7 @@ class Form:
 		sommets = []
 		size = float(size)/self.scale
 		for sommet in self.sommets:
-			sommets.append([sommet[0]*size, sommet[1]*size])
+			sommets.append([round(sommet[0]*size), round(sommet[1]*size)])
 		return sommets
 
 	def ptMoyen(self, size = 100):
@@ -30,7 +30,7 @@ class Form:
 	    l = len(self.sommets)
 	    y /= l
 	    x /= l
-	    return[x, y]
+	    return[round(x), round(y)]
 
 	def isCornerSelected(self, p, size = 100):
 		x = p[0]
@@ -76,45 +76,6 @@ class Form:
 
 		return isOn
 
-	def isCutting(self, form, size = 100):
-		isCutting = False
-		#size = float(size)/self.scale
-		#isCutting = False
-		#equations_self = self.build_equations(size)
-		#equations_form = form.build_equations(size)
-
-		#for eq_self in equations_self:
-		#	if isCutting: break
-		#	for eq_form in equations_form:
-		#		if isCutting: break
-		#		if len(eq_self) == 3 and len(eq_form) == 3:
-		#			pass
-		#		elif len(eq_self) == 3 and len(eq_form) != 3:
-
-					#C LA PUTAIN DE COORDONNEE DANS LE CADRE QUE TUTILISE BORDEL DE MERDE
-
-		#			section = range(int(eq_self[1][1]*size), int(eq_self[2][1]*size) + 2)
-		#			isCutting = equation_solve(eq_form, eq_self[0]*size) in section
-		#		elif len(eq_form) == 3 and len(eq_self) != 3:
-		#			section = range(int(eq_form[1][1]*size), int(eq_form[2][1]*size) + 2)
-		#			print(section)
-		#			isCutting = equation_solve(eq_self, eq_form[0]*size) in section
-		#		else:
-		#			sectionX = range(int(eq_form[2][0]*size), int(eq_form[3][0]*size) + 2)
-		#			sectionY = range(int(eq_self[2][1]*size), int(eq_self[3][1]*size) + 2)
-		#			for x in sectionX :
-		#				if equation_solve(eq_self, eq_form[0]*size) in sectionY:
-		#					isCutting = True
-		#					break
-
-		return isCutting
-
-
-		# y = a1*x + b1
-		# y = a2*x + b2
-		# x = (y-b1) / a1
-		# y = (a2*b1/a1 + b2)/(1-a2/a1)
-
 	def rotation(self, w):
 		rotatedSommets = []
 		p = [self.scale/2, self.scale/2]
@@ -142,7 +103,7 @@ def equation(first_point, second_point):
 	else:
 		a = (second_point[1] - first_point[1]) / (second_point[0] - first_point[0])
 		b = first_point[1] - a * first_point[0]
-		equation = [a,b, first_point, second_point]
+		equation = [round(a),round(b), first_point, second_point]
 
 	return equation
 
