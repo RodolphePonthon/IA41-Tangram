@@ -10,8 +10,8 @@ from convert_to_draw import convert_to_draw
 
 environ['SDL_VIDEO_CENTERED'] = '1'
 
-def draw(screen, gForm):
-    gForm.update()
+def draw(screen, gForm, withBorder = True):
+    gForm.update(withBorder)
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
 def init_forms(size):
@@ -40,6 +40,7 @@ def main():
     width = 800
     height = 600
     fps = 30
+    withBorder = True
     screen = pyg.display.set_mode((width, height))
     screen_rect = screen.get_rect()
     screen_rect.x = screen_rect.y = 0
@@ -67,11 +68,13 @@ def main():
             for gForm2 in list_GraphicForm:
                 gForm.magnet(gForm2, width, height)
 
-    finale = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]] 
+    finale = [] 
+    formToFind = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]] 
 
     while running:
         #Place zones
-        #pyg.draw.polygon(zoneDessin.surface, (0,0,0), finale)
+        for form in finale:
+            pyg.draw.polygon(zoneDessin.surface, (0,0,0), form)
         screen.blit(zoneDessin.surface, zoneDessin.rect)
         screen.blit(zoneDepart.surface, zoneDepart.rect)
 
@@ -137,7 +140,6 @@ def main():
                         if not (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) and formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
                             actualForm.magnet(formTmp, width, height)
                 if not zoneDessin.isOn(actualForm):
-                    actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint, width, height)
                     actualForm.initialize()
                 screen.fill((200,200,200))
                 actualForm = None
@@ -158,7 +160,14 @@ def main():
                 if evt.key == pyg.K_ESCAPE:
                     running = False
                 if evt.key == pyg.K_SPACE:
-                    finale = convert_to_draw(list_GraphicForm)
+                    formToFind = convert_to_draw(list_GraphicForm)
+                    finale = []
+                    for form in list_GraphicForm:
+                        s = []
+                        for sommet in form.get_sommets(form.formeSurface.get_height()):
+                            s.append([sommet[0] - zoneDessin.rect.x, sommet[1]])
+                        finale.append(s)
+                        form.initialize()
 
     pyg.quit()
     exit()
