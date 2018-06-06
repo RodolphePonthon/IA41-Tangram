@@ -15,6 +15,7 @@ class GraphicForm:
         self.formeSurface.set_colorkey((0,0,0))
         #initialisation Rectangle
         self.formeRect = self.formeSurface.get_rect()
+        self.initialPoint = [self.formeRect.x, self.formeRect.y]
         p = self.forme.ptMoyen()
         self.initialize()
         self.formeRect.y = round(posY + (p[1] - self.forme.ptMoyen()[1]) * (size/self.forme.scale))
@@ -82,6 +83,7 @@ class GraphicForm:
         return offsetX, offsetY
 
     def initialize(self):
+        self.move([self.formeRect.x, self.formeRect.y] , self.initialPoint, 1000, 1000)
         self.forme.initialize()
         size = self.forme.new_scale
         p = self.forme.ptMoyen()
@@ -89,10 +91,11 @@ class GraphicForm:
             sommet[0] += round(size/2/(size/self.forme.scale) - p[0],1)
             sommet[1] += round(size/2/(size/self.forme.scale)  - p[1],1)
 
-    def update(self):
+    def update(self, withBorder = True):
         self.formeSurface.fill((0,0,0))
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
-        pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(self.formeSurface.get_height()),3)
+        if withBorder:
+            pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(self.formeSurface.get_height()),3)
 
     def draw_only_fill(self):
         self.formeSurface.fill((0,0,0))

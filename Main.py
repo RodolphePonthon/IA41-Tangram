@@ -6,11 +6,12 @@ from GraphicForm import GraphicForm
 from math import pi
 from os import environ
 from zone import Zone
+from convert_to_draw import convert_to_draw
 
 environ['SDL_VIDEO_CENTERED'] = '1'
 
-def draw(screen, gForm):
-    gForm.update()
+def draw(screen, gForm, withBorder = True):
+    gForm.update(withBorder)
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
 def init_forms(size):
@@ -33,113 +34,13 @@ def init_forms(size):
 def gestion_event(evt):
     pass
 
-def convert_to_draw(list_gForms):
-    sommets = []
-    t = len(list_gForms)
-    size = list_gForms[0].forme.new_scale
-    sommetsToRemove = []
-
-    # Pour chaque forme
-
-    for i in range(t):
-        form1 = list_gForms[i]
-        sommetsTmp = []
-        sommetsTmpRemove = []
-        for sommet in form1.get_sommets(size):
-            if sommet not in sommets:
-                if sommet not in sommetsToRemove:
-                    sommets.append(sommet)
-
-        # Pour chaque equation de cette forme
-
-        for eq1 in form1.build_equations(size):
-
-            # Avec toutes les autres formes
-
-            for j in range(t):
-                if i != j:
-                    form2 = list_gForms[j]
-
-                    # On compare chaque equation
-
-                    for eq2 in form2.build_equations(size):
-
-                        if len(eq1) == len(eq2):
-
-                            # Si l'equation est du type x = cte et que pour ces deux equation la constante est la meme
-                            a1 = abs(int(float(str(eq1[0]))))
-                            a2 = abs(int(float(str(eq2[0]))))
-                            if (len(eq1) == 3) and (a1 == a2):
-
-                                # On cherche si un des deux points de l'equation est identique pour les deux equations
-
-                                if eq1[1] == eq2[1] or eq1[1] == eq2[2]:
-
-                                    if eq1[1] in sommets:
-
-                                        # Si ce point n'a pas encore été trouvé on l'ajoute à sommetsTmp
-
-                                        if eq1[1] not in sommetsTmp:
-                                            sommetsTmp.append(eq1[1])
-                                        else:
-
-                                        # Si ce point a déjà été trouvé alors on le supprime
-                                            if eq1[1] not in sommetsTmpRemove:
-                                                sommetsTmpRemove.append(eq1[1])
-                                elif eq1[2] == eq2[2] or eq1[2] == eq2[1]:
-                                    if eq1[2] in sommets:
-                                        if eq1[2] not in sommetsTmp:
-                                            sommetsTmp.append(eq1[2])
-                                        else:
-                                            if eq1[2] not in sommetsTmpRemove:
-                                                sommetsTmpRemove.append(eq1[2])
-                            elif (len(eq1) == 4):
-                                a1 = abs(int(float(str(eq1[0]))))
-                                a2 = abs(int(float(str(eq2[0]))))
-                                b1 = int(float(str(eq1[1])))
-                                b2 = int(float(str(eq2[1])))
-                                if (a1 == a2) and ((b1 % b2 == 0) or (b2 % b1) == 0):
-                                    if eq1[2] == eq2[2] or eq1[2] == eq2[3]:
-                                        if eq1[2] in sommets:
-                                            if eq1[2] not in sommetsTmp:
-                                                sommetsTmp.append(eq1[2])
-                                            else:
-                                                if eq1[2] not in sommetsTmpRemove:
-                                                    sommetsTmpRemove.append(eq1[2])
-                                    if eq1[3] == eq2[3] or eq1[3] == eq2[2]:
-                                        if eq1[3] in sommets:
-                                            if eq1[3] not in sommetsTmp:
-                                                sommetsTmp.append(eq1[3])
-                                            else:
-                                                if eq1[3] not in sommetsTmpRemove:
-                                                    sommetsTmpRemove.append(eq1[3])
-
-        for sommet in sommetsTmpRemove:
-            if sommet not in sommetsToRemove:
-                sommetsToRemove.append(sommet)
-
-    for sommet in sommetsToRemove:
-        sommets.remove(sommet)
-
-    #sommets = sorted(sommets, key = lambda sommet: sommet[1])
-    #sommets = sorted(sommets, key = lambda sommet: sommet[0])  
-
-    for sommet in sommets:
-        sommet[0] -= 400
-        sommet[0] = round(sommet[0])
-        sommet[1] = round(sommet[1])
-        print(sommet)
-
-    print(len(sommets))
-
-    return sommets
-
 def main():
     #Initialize screen
     pyg.init()
     width = 800
     height = 600
     fps = 30
+    withBorder = True
     screen = pyg.display.set_mode((width, height))
     screen_rect = screen.get_rect()
     screen_rect.x = screen_rect.y = 0
@@ -167,11 +68,13 @@ def main():
             for gForm2 in list_GraphicForm:
                 gForm.magnet(gForm2, width, height)
 
-    finale = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]] 
+    finale = [] 
+    formToFind = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]] 
 
     while running:
         #Place zones
-        pyg.draw.polygon(zoneDessin.surface, (0,0,0), finale)
+        for form in finale:
+            pyg.draw.polygon(zoneDessin.surface, (0,0,0), form)
         screen.blit(zoneDessin.surface, zoneDessin.rect)
         screen.blit(zoneDepart.surface, zoneDepart.rect)
 
@@ -237,7 +140,6 @@ def main():
                         if not (actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) and formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height())):
                             actualForm.magnet(formTmp, width, height)
                 if not zoneDessin.isOn(actualForm):
-                    actualForm.move([actualForm.formeRect.x, actualForm.formeRect.y] , actualForm.initialPoint, width, height)
                     actualForm.initialize()
                 screen.fill((200,200,200))
                 actualForm = None
@@ -258,7 +160,14 @@ def main():
                 if evt.key == pyg.K_ESCAPE:
                     running = False
                 if evt.key == pyg.K_SPACE:
-                    finale = convert_to_draw(list_GraphicForm)
+                    formToFind = convert_to_draw(list_GraphicForm)
+                    finale = []
+                    for form in list_GraphicForm:
+                        s = []
+                        for sommet in form.get_sommets(form.formeSurface.get_height()):
+                            s.append([sommet[0] - zoneDessin.rect.x, sommet[1]])
+                        finale.append(s)
+                        form.initialize()
 
     pyg.quit()
     exit()
