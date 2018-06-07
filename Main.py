@@ -14,7 +14,7 @@ def draw(screen, gForm, withBorder = True):
     gForm.update(withBorder)
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
-def init_forms(size):
+def init_forms(width, height):
     triangle = Form([[0,0],[0,100],[50,50]])
     triangle2 = Form([[0,0],[50,50],[100,0]])
     triangle3 = Form([[75,25],[100,0],[100,50]])
@@ -27,7 +27,7 @@ def init_forms(size):
 
     list_GraphicForm = []
     for form in list_forms:
-        list_GraphicForm.append(GraphicForm(form, 10, int(size/4), int(size/2)))
+        list_GraphicForm.append(GraphicForm(form, width/4 - height/4, int(height/4), int(height/2)))
 
     return list_GraphicForm
 
@@ -50,7 +50,7 @@ def main():
     clock.tick(fps)
 
     #Initialize variables
-    list_GraphicForm = init_forms(height)
+    list_GraphicForm = init_forms(width, height)
     running = True
     move = False
     turn = False
@@ -60,22 +60,27 @@ def main():
     ptFinal = [0,0]
     ptTmp = [0,0]
     lastPtTmp = [0,0]
-    withBorder = True
     actualForm = None
-    zoneDessin = Zone((0, 0, 100), (width/2, 0), (width/2, height))
-    zoneDepart = Zone((0, 133, 0), (10, height/4), (height/2, height/2))
+    zoneDessin = Zone((width/2, 0), (width/2, height), "Textures/ZoneDessin.png")
+    zoneDepart = Zone((width/4 - height/4, height/4), (height/2, height/2), "Textures/ZoneDepart.png")
+    titreBg = pyg.image.load("Textures/menuBg.png")
+    titreBg = pyg.transform.scale(titreBg, (int(width/2), int(height)))
+    titreBg_rect = titreBg.get_rect()
+    titreBg_rect.x = 0
+    titreBg_rect.y = 0
 
     for gForm in list_GraphicForm:
             for gForm2 in list_GraphicForm:
                 gForm.magnet(gForm2, width, height)
 
-    finale = [] 
-    formToFind = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]] 
+    finale = []
+    formToFind = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]]
 
     while running:
         #Place zones
         for form in finale:
             pyg.draw.polygon(zoneDessin.surface, (0,0,0), form)
+        screen.blit(titreBg, titreBg_rect)
         screen.blit(zoneDessin.surface, zoneDessin.rect)
         screen.blit(zoneDepart.surface, zoneDepart.rect)
 
@@ -116,7 +121,7 @@ def main():
                 actualForm.move(lastPtTmp, ptTmp, width, height)
                 for i in range(len(list_GraphicForm)-1):
                     formTmp = list_GraphicForm[i]
-                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):     
+                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):
                         if actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height()):
                             actualForm.move(ptTmp, lastPtTmp, width, height)
                             break
@@ -141,7 +146,7 @@ def main():
                 actualForm.move(lastPtTmp, ptFinal, width, height)
                 for i in range(len(list_GraphicForm)-1):
                     formTmp = list_GraphicForm[i]
-                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):     
+                    if zoneDessin.isOn(actualForm) or zoneDessin.isOn(formTmp):
                         if actualForm.isCutting(formTmp, graphicForm.formeSurface.get_height()) or formTmp.isCutting(graphicForm, graphicForm.formeSurface.get_height()):
                             actualForm.move(ptFinal, lastPtTmp, width, height)
                             break

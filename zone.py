@@ -7,12 +7,12 @@ from form import Form
 
 class Zone:
 
-	def __init__(self, color, position, size, authorized = True):
+	def __init__(self, position, size, texture, authorized = True):
 		self.size = size
 		self.position = position
 		self.authorized = authorized
-		self.surface = pyg.Surface((size[0], size[1]))
-		self.surface.fill(color)
+		self.surface = pyg.image.load(texture)
+		self.surface = pyg.transform.scale(self.surface, (int(size[0]), int(size[1])))
 		self.rect = self.surface.get_rect()
 		self.rect.x, self.rect.y = position[0], position[1]
 
