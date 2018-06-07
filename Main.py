@@ -37,7 +37,7 @@ def gestion_event(evt):
 def main():
     #Initialize screen
     pyg.init()
-    width = 800
+    width = 1000
     height = 600
     fps = 30
     withBorder = True
@@ -60,6 +60,7 @@ def main():
     ptFinal = [0,0]
     ptTmp = [0,0]
     lastPtTmp = [0,0]
+    withBorder = True
     actualForm = None
     zoneDessin = Zone((0, 0, 100), (width/2, 0), (width/2, height))
     zoneDepart = Zone((0, 133, 0), (10, height/4), (height/2, height/2))
@@ -80,9 +81,17 @@ def main():
 
         #Draw Forms
         for gForm in list_GraphicForm:
-            draw(screen, gForm)
+            if zoneDessin.isOn(gForm):
+                draw(screen, gForm, withBorder)
+            else:
+                draw(screen, gForm)
 
         pyg.display.flip()
+
+        if zoneDessin.rect.collidepoint(pyg.mouse.get_pos()):
+            withBorder = True
+        else:
+            withBorder = False
 
         for evt in pyg.event.get():
             if evt.type == pyg.QUIT:
@@ -174,6 +183,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# On compte tous les sommets sauf si on trouve pour deux formes différentes
-# deux mêmes équations, on ne prend pas le point

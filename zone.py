@@ -3,6 +3,8 @@
 import pygame as pyg
 from form import Form
 
+# Une zone est une "partie" de l'écran qui permet de savoir si une forme est à l'intérieur de cette zone
+
 class Zone:
 
 	def __init__(self, color, position, size, authorized = True):
