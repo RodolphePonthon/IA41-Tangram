@@ -247,8 +247,7 @@ def main():
                             if len(list_ptsForme) > 2 and list_ptsForme[0] == list_ptsForme[-1]:
                                 list_ptsFinalForme =copy(list_ptsForme)
                                 del list_ptsFinalForme[-1]
-                                final_Gform = GraphicForm(Form(list_ptsFinalForme), width/4 - height/4, int(height/4), int(height/2))
-                                screen.fill((200,200,200))
+                                final_form = Form(list_ptsFinalForme)
                                 phase = 3
                             else:
                                 print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
@@ -261,8 +260,9 @@ def main():
             screen.blit(zoneDessin.surface, zoneDessin.rect)
             
             #Draw forms
-            pyg.draw.lines(zoneTransition.surface, (200,200,200), False, list_ptsForme, 5)
-            #draw(screen, final_Gform)
+            if len(list_ptsForme) > 1:
+                pyg.draw.lines(zoneTransition.surface, (200,200,200), False, list_ptsForme, 5)
+            
             for evt in pyg.event.get():
                 if evt.type == pyg.QUIT:
                     running = False
