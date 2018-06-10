@@ -106,6 +106,13 @@ class GraphicForm:
 
     def isCornerSelected(self, p, size = 100):
         return self.forme.isCornerSelected([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)
+        
+    def getCornerSelected(self, p, size = 100):
+        sommet = self.forme.getCornerSelected([(p[0]-self.formeRect.x),(p[1]-self.formeRect.y)], size)
+        if sommet != []:
+            sommet[0] += self.formeRect.x
+            sommet[1] += self.formeRect.y
+        return sommet
 
     def isCutting(self, gForm, size = 100):
         isCutting = False
