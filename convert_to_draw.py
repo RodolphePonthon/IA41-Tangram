@@ -1,4 +1,3 @@
-from copy import copy
 from form import equation as make_eq
 
 def convert_to_draw(list_gForms):
@@ -13,6 +12,7 @@ def convert_to_draw(list_gForms):
             equations = find_equation_with(actualForm, sommet, size)
             eqMerged  = 0
             eqAligned = 0
+            belongs = 0
 
             for j in range(len(list_gForms)):
                 if i != j:
@@ -26,6 +26,7 @@ def convert_to_draw(list_gForms):
 
                             elif areAligned(eq, eqTest):
                                 eqAligned +=1
+
             if eqMerged == 2:
                 if eqAligned >= 1:
                     if sommet not in criticalPoints:
@@ -69,34 +70,35 @@ def convert_to_draw(list_gForms):
         print(eq)
         eqKeep.remove(eq)
         p1, p2 = eq[-2], eq[-1]
-        if p1 not in criticalPoints and p2 not in criticalPoints:
-            for eqToTest in eqTmp:
-                if eq != eqToTest:
-                    p3, p4 = eqToTest[-2], eqToTest[-1]
-                    if p1 not in points:
+        for eqToTest in eqTmp:
+            if eq != eqToTest:
+                p3, p4 = eqToTest[-2], eqToTest[-1]
+                if p1 not in points:
+                    if p1 not in criticalPoints and p2 not in criticalPoints:
                         if p3 == p1 and areAligned(eq, eqToTest) and p2 != p4:
                             eqKeep.append(make_eq(p2, p4))
                         elif p4 == p1 and areAligned(eq, eqToTest) and p2 != p3:
                             eqKeep.append(make_eq(p2, p3))
-                        elif areHalfMerged(eq, eqToTest, p1):
-                            if belongsTo(p3, eq):
-                                if p3 in points and p2 != p3:
-                                    eqKeep.append(make_eq(p2, p3))
-                            elif belongsTo(p4, eq):
-                                if p4 in points and p2 != p4:
-                                    eqKeep.append(make_eq(p2, p4))
-                    elif p2 not in points:
+                    if areHalfMerged(eq, eqToTest, p1):
+                        if belongsTo(p3, eq):
+                            if p3 in points and p2 != p3:
+                                eqKeep.append(make_eq(p2, p3))
+                        elif belongsTo(p4, eq):
+                            if p4 in points and p2 != p4:
+                                eqKeep.append(make_eq(p2, p4))
+                elif p2 not in points:
+                    if p1 not in criticalPoints and p2 not in criticalPoints:
                         if p3 == p2 and areAligned(eq, eqToTest) and p1 != p4:
                             eqKeep.append(make_eq(p1, p4))
                         elif p4 == p2 and areAligned(eq, eqToTest) and p1 != p3:
                             eqKeep.append(make_eq(p1, p3))
-                        elif areHalfMerged(eq, eqToTest, p2):
-                            if belongsTo(p3, eq):
-                                if p3 in points and p3 != p1:
-                                    eqKeep.append(make_eq(p1, p3))
-                            elif belongsTo(p4, eq):
-                                if p4 in points and p1 != p4:
-                                    eqKeep.append(make_eq(p1, p4))
+                    if areHalfMerged(eq, eqToTest, p2):
+                        if belongsTo(p3, eq):
+                            if p3 in points and p3 != p1:
+                                eqKeep.append(make_eq(p1, p3))
+                        elif belongsTo(p4, eq):
+                            if p4 in points and p1 != p4:
+                                eqKeep.append(make_eq(p1, p4))
 
     print("##########")
 
@@ -116,6 +118,11 @@ def convert_to_draw(list_gForms):
 
     for eq in eqKeep:
         print(eq)
+
+    print("#########")
+
+    for point in criticalPoints:
+        print(point)
 
     return points
 

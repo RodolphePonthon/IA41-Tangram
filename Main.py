@@ -1,6 +1,6 @@
 #!--*--coding:utf-8--*--
 
-from copy import copy
+from copy import deepcopy
 import pygame as pyg
 from form import Form
 from Button import Button
@@ -9,7 +9,7 @@ from math import pi
 from os import environ
 from zone import Zone
 from convert_to_draw import convert_to_draw
-#from ArtInt import Ia
+from ArtInt import Ia
 from Silhouette import silhouette
 
 environ['SDL_VIDEO_CENTERED'] = '1'
@@ -66,6 +66,7 @@ def main():
     ptTmp = [0,0]
     lastPtTmp = [0,0]
     list_ptsForme = []
+    list_ptsFormeSurface = []
     actualForm = None
     silhouetteForme = None
     zoneDessin = Zone((width/2, 0), (width/2, height), "Textures/ZoneDessin.png")
@@ -75,6 +76,9 @@ def main():
     msgSelect = Zone((0, 3*height/4), (width/2, 20*height/600), "Textures/messageSelection.png")
     buttonLock = Button((width/4-width/8, height-height/6), (width/4, height/8), "Textures/buttonLock.png")
     buttonCheck = Button((width/2-height*50/600, height-height*50/600), (height*50/600, height*50/600), "Textures/buttonCheck.png")
+
+
+    dejavu = True
 
     for gForm in list_GraphicForm:
             for gForm2 in list_GraphicForm:
@@ -248,9 +252,12 @@ def main():
                                     list_ptsFormeTmp.append(list_ptsForme[i])
                             list_ptsForme = list_ptsFormeTmp
                             if len(list_ptsForme) > 2 and list_ptsForme[0] == list_ptsForme[-1]:
+                                list_ptsFormeSurface = [deepcopy(pt) for pt in list_ptsForme]
+                                for pt in list_ptsForme:
+                                    pt[0] += width/2
                                 silhouetteForme = silhouette(list_ptsForme)
                                 silhouetteForme.clean_couples()
-                                
+                                zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
                                 phase = 3
                             else:
                                 print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
@@ -261,11 +268,10 @@ def main():
             #Place zones
             screen.blit(zoneTransition.surface, zoneTransition.rect)
             screen.blit(zoneDessin.surface, zoneDessin.rect)
-            
+
             #Draw forms
-            if len(list_ptsForme) > 1:
-                pyg.draw.lines(zoneTransition.surface, (200,200,200), False, list_ptsForme, 5)
-            
+            if len(list_ptsFormeSurface) > 1:
+                pyg.draw.lines(zoneDessin.surface, (255,0,0), False, list_ptsFormeSurface, 5)
             for evt in pyg.event.get():
                 if evt.type == pyg.QUIT:
                     running = False
@@ -273,10 +279,12 @@ def main():
                 elif evt.type == pyg.MOUSEBUTTONDOWN:
                     pass
             pyg.display.flip()
-            
-            
-            
-            
+            if dejavu:
+                ia = Ia(silhouetteForme, init_forms(width, height), width, height)
+                for gforme in ia.list_form:
+                    print(gforme.get_sommets(gforme.forme.new_scale))
+                    pyg.draw.polygon(zoneDessin.surface, (0,0,0), gforme.get_sommets(gforme.forme.new_scale))
+                dejavu = False
     pyg.quit()
     exit()
 

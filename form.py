@@ -54,7 +54,7 @@ class Form:
         sommets = self.get_sommets(size)
         for sommet in sommets:
             if (sommet[0] - x)**2 + (sommet[1] - y)**2  <= r**2:
-                sommetSelected = copy.copy(sommet)
+                sommetSelected = copy.deepcopy(sommet)
                 break
 
         return sommetSelected

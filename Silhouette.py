@@ -2,12 +2,14 @@
 
 from form import equation
 from convert_to_draw import find_equation_with
+from copy import deepcopy
 
 class silhouette:
     def __init__(self, list_pts_form):
-        self.couples = creation_couples(list_pts_form)
-        del list_pts_form[-1]
-        self.sommets = list_pts_form
+        list_pts_form_cpy = [deepcopy(pt) for pt in list_pts_form]
+        self.couples = creation_couples(list_pts_form_cpy)
+        del list_pts_form_cpy[-1]
+        self.sommets = list_pts_form_cpy
        
     def clean_couples(self):
         toRemove = []
@@ -31,13 +33,16 @@ class silhouette:
         self.couples = [couple for couple in self.couples if couple not in toRemove]
             
         self.couples += toAppend
-       
+
     def remove(self, forme, sommet):
         eq_sil = self.find_equation_with(sommet)
-        eq_form = find_equation_with(forme, sommet, forme.new_scale)
+        eq_form = find_equation_with(forme, sommet, forme.forme.new_scale)
         
+        print("sommet :", sommet)
+        print("couples b : ", self.couples)
+
         for eq in eq_sil:
-            for eqtest in eq_form:
+            for eq_test in eq_form:
                 if are_para(eq, eq_test):
                     if eq[-1] == eq_test[-1] and eq[-2] != eq_test[-2]:
                         self.couples.append([eq[-2], eq_test[-2]])
@@ -45,6 +50,8 @@ class silhouette:
                     elif eq[-2] == eq_test[-2] and eq[-1] != eq_test[-1]:
                         self.couples.append([eq_test[-1], eq[-1]])
         self.couples = [couple for couple in self.couples if sommet not in couple]
+
+        print("couples a : ",self.couples)
         
     def build_equations(self):
         equations = []
