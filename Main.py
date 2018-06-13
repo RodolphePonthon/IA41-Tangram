@@ -9,7 +9,7 @@ from math import pi
 from os import environ
 from zone import Zone
 from convert_to_draw import convert_to_draw
-from ArtInt import Ia
+#from ArtInt import Ia
 from Silhouette import silhouette
 
 environ['SDL_VIDEO_CENTERED'] = '1'
@@ -249,7 +249,8 @@ def main():
                             list_ptsForme = list_ptsFormeTmp
                             if len(list_ptsForme) > 2 and list_ptsForme[0] == list_ptsForme[-1]:
                                 silhouetteForme = silhouette(list_ptsForme)
-                                print(silhouetteForme.couples)
+                                silhouetteForme.clean_couples()
+                                
                                 phase = 3
                             else:
                                 print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
