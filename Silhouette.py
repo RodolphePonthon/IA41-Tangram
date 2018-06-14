@@ -39,6 +39,7 @@ class silhouette:
         eq_form = find_equation_with(forme, sommet, forme.forme.new_scale)
         
         print("sommet :", sommet)
+        print("silhouette : ", self.sommets)
         print("couples b : ", self.couples)
 
         for eq in eq_sil:
@@ -49,7 +50,21 @@ class silhouette:
                     
                     elif eq[-2] == eq_test[-2] and eq[-1] != eq_test[-1]:
                         self.couples.append([eq_test[-1], eq[-1]])
+
+        firstPoint = []
+        secondPoint = []
+
+        for eq in eq_form:
+            if sommet == eq[-1]:
+                firstPoint = eq[-2]
+            else:
+                secondPoint = eq[-1]
+
+        self.couples.append([firstPoint, secondPoint])
+
         self.couples = [couple for couple in self.couples if sommet not in couple]
+
+        self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
 
         print("couples a : ",self.couples)
         

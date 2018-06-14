@@ -19,8 +19,8 @@ def draw(screen, gForm, withBorder = True):
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
 def init_forms(width, height):
-    triangle = Form([[0,0],[0,100],[50,50]])
-    triangle2 = Form([[0,0],[50,50],[100,0]])
+    triangle = Form([[50,50],[0,100],[0,0]])
+    triangle2 = Form([[100,0],[50,50],[0,0]])
     triangle3 = Form([[75,25],[100,0],[100,50]])
     triangle4 = Form([[50,100],[100,50],[100,100]])
     triangle5 = Form([[25,75],[50,50],[75,75]])
@@ -246,11 +246,13 @@ def main():
                                 
                     if buttonCheck.isOn(pyg.mouse.get_pos()):
                         if list_ptsForme != []:
+                            print("list debut : ", list_ptsForme)
                             list_ptsFormeTmp = [list_ptsForme[0]]
                             for i in range(1, len(list_ptsForme)):
                                 if (list_ptsForme[i][0] != list_ptsForme[i-1][0]) or (list_ptsForme[i][1] != list_ptsForme[i-1][1]):
                                     list_ptsFormeTmp.append(list_ptsForme[i])
                             list_ptsForme = list_ptsFormeTmp
+                            print("list debut apres suppr doublons : ", list_ptsForme)
                             if len(list_ptsForme) > 2 and list_ptsForme[0] == list_ptsForme[-1]:
                                 list_ptsFormeSurface = [deepcopy(pt) for pt in list_ptsForme]
                                 for pt in list_ptsForme:
@@ -272,18 +274,27 @@ def main():
             #Draw forms
             if len(list_ptsFormeSurface) > 1:
                 pyg.draw.lines(zoneDessin.surface, (255,0,0), False, list_ptsFormeSurface, 5)
+            pyg.display.flip()
+
+            forms_ia = init_forms(width, height)
+
+            for gforme in forms_ia:
+                pyg.draw.polygon(zoneDepart.surface, (0,0,0), gforme.get_sommets(gforme.forme.new_scale))
+                pyg.draw.polygon(zoneDepart.surface, (200,200,200), gforme.get_sommets(gforme.forme.new_scale), 4)
+
             for evt in pyg.event.get():
                 if evt.type == pyg.QUIT:
                     running = False
                     
                 elif evt.type == pyg.MOUSEBUTTONDOWN:
                     pass
-            pyg.display.flip()
+            
             if dejavu:
-                ia = Ia(silhouetteForme, init_forms(width, height), width, height)
+                ia = Ia(silhouetteForme, forms_ia, width, height)
                 for gforme in ia.list_form:
                     print(gforme.get_sommets(gforme.forme.new_scale))
                     pyg.draw.polygon(zoneDessin.surface, (0,0,0), gforme.get_sommets(gforme.forme.new_scale))
+                    pyg.draw.polygon(zoneDessin.surface, (200,200,200), gforme.get_sommets(gforme.forme.new_scale), 4)
                 dejavu = False
     pyg.quit()
     exit()
