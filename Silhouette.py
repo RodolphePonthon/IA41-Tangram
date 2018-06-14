@@ -54,19 +54,27 @@ class silhouette:
         firstPoint = []
         secondPoint = []
 
-        for eq in eq_form:
-            if sommet == eq[-1]:
-                firstPoint = eq[-2]
-            else:
-                secondPoint = eq[-1]
+        if len(forme.forme.sommets) == 3:
+            for eq in eq_form:
+                if sommet == eq[-1]:
+                    firstPoint = eq[-2]
+                else:
+                    secondPoint = eq[-1]
+            self.couples.append([firstPoint, secondPoint])
+        else:
+            for eq in forme.build_equations(forme.forme.new_scale):
+                if sommet not in eq:
+                    self.couples.append([eq[-1], eq[-2]])
 
-        self.couples.append([firstPoint, secondPoint])
+         #on clean auant de fois qu'il peut rester de points en plein milieu d'un segment à savoir 2
 
         self.couples = [couple for couple in self.couples if sommet not in couple]
 
+        self.sommets = []
         self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
 
         print("couples a : ",self.couples)
+        print("sommets new silhouette : ", self.sommets)
         
     def build_equations(self):
         equations = []
