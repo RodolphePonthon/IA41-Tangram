@@ -14,6 +14,7 @@ class silhouette:
     def clean_couples(self):
         toRemove = []
         toAppend = []
+        # print("couples before cleaning : ", self.couples)
         for couple in self.couples:
             for couple_test in self.couples:
                 if couple != couple_test:
@@ -27,8 +28,8 @@ class silhouette:
                         if are_para(equation(couple[1], couple[0]), equation(couple_test[1], couple_test[0])):
                             toRemove.append(couple)
                             toRemove.append(couple_test)
-                            if [couple_test[0], couple[1]] not in toAppend:
-                                toAppend.append([couple[1], couple_test[0]])
+                            if [couple[1], couple_test[0]] not in toAppend:
+                                toAppend.append([couple_test[0], couple[1]])
         
         self.couples = [couple for couple in self.couples if couple not in toRemove]
             
@@ -38,9 +39,9 @@ class silhouette:
         eq_sil = self.find_equation_with(sommet)
         eq_form = find_equation_with(forme, sommet, forme.forme.new_scale)
         
-        print("sommet :", sommet)
-        print("silhouette : ", self.sommets)
-        print("couples b : ", self.couples)
+        # print("sommet :", sommet)
+        # print("silhouette : ", self.sommets)
+        # print("couples b : ", self.couples)
 
         for eq in eq_sil:
             for eq_test in eq_form:
@@ -66,15 +67,24 @@ class silhouette:
                 if sommet not in eq:
                     self.couples.append([eq[-1], eq[-2]])
 
-         #on clean auant de fois qu'il peut rester de points en plein milieu d'un segment à savoir 2
-
         self.couples = [couple for couple in self.couples if sommet not in couple]
-
+        
+        self.clean_couples()
+        self.clean_couples()
+        
+        listTmp = []
+        
+        for couple in self.couples:
+            if couple not in listTmp and couple[1] != couple[0]:
+                listTmp.append(couple)
+        
+        self.couples = listTmp
+        
         self.sommets = []
         self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
 
-        print("couples a : ",self.couples)
-        print("sommets new silhouette : ", self.sommets)
+        # print("couples a : ",self.couples)
+        # print("sommets new silhouette : ", self.sommets)
         
     def build_equations(self):
         equations = []
@@ -91,6 +101,15 @@ class silhouette:
                 equations.append(eq)
 
         return equations
+        
+    def complete(self, form):
+        # print("sommets forme : ", form.get_sommets(form.forme.new_scale))
+        # print("sommets sil : ", self.sommets)
+        test = deepcopy(self.sommets)
+        for sommet in form.get_sommets(form.forme.new_scale):
+            if sommet in self.sommets:
+                test.remove(sommet)
+        return test == []
     
 def creation_couples(list_pts):
     list_cpl = []

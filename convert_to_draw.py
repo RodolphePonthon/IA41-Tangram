@@ -54,12 +54,12 @@ def convert_to_draw(list_gForms):
 
     criticalPoints = [point for point in criticalPoints if point not in points]
 
-    for point in points:
-        print(point)
+    # for point in points:
+        # print(point)
 
-    print(len(points))
+    # print(len(points))
 
-    print("##########")
+    # print("##########")
 
     for eq in eqKeep:
         p1, p2 = eq[-2], eq[-1]
@@ -67,7 +67,7 @@ def convert_to_draw(list_gForms):
             eqTmp.append(eq)
 
     for eq in eqTmp:
-        print(eq)
+        # print(eq)
         eqKeep.remove(eq)
         p1, p2 = eq[-2], eq[-1]
         for eqToTest in eqTmp:
@@ -100,7 +100,7 @@ def convert_to_draw(list_gForms):
                             if p4 in points and p1 != p4:
                                 eqKeep.append(make_eq(p1, p4))
 
-    print("##########")
+    # print("##########")
 
     eqToRemove = []
 
@@ -116,13 +116,13 @@ def convert_to_draw(list_gForms):
 
     eqKeep = [eq for eq in eqKeep if eq not in eqToRemove]
 
-    for eq in eqKeep:
-        print(eq)
+    # for eq in eqKeep:
+        # print(eq)
 
-    print("#########")
+    # print("#########")
 
-    for point in criticalPoints:
-        print(point)
+    # for point in criticalPoints:
+        # print(point)
 
     return points
 

@@ -17,11 +17,48 @@ class Ia :
     
     def solve(self, silhouette, list_forms, moved_forms):
         for form in list_forms:
-            print("sommets nouvelle forme : ", form.get_sommets(form.forme.new_scale))
-            print("nb Pieces : ", len(list_forms) - len(moved_forms))
+            # print("sommets nouvelle forme : ", form.get_sommets(form.forme.new_scale))
+            # print("nb Pieces : ", len(list_forms) - len(moved_forms))
             if form not in moved_forms:
                 if len(list_forms) - len(moved_forms) == 1:
-                    return True
+                    if len(silhouette.sommets) == len(form.get_sommets()):
+                        sommet = form.get_sommets(form.forme.new_scale)[0]
+                        first_eq = []
+                        last_eq = []
+                        for eq in find_equation_with(form, sommet, form.forme.new_scale):
+                            if eq[-1] == sommet:
+                                first_eq = eq
+                            else:
+                                last_eq = eq
+                        list_eq_form = [first_eq, last_eq]
+                        for sommet_sil in silhouette.sommets:
+                            first_eq = []
+                            last_eq = []
+                            for eq in silhouette.find_equation_with(sommet_sil):
+                                if eq[-1] == sommet_sil:
+                                    first_eq = eq
+                                else:
+                                    last_eq = eq
+                            list_eq_sil = [first_eq, last_eq]
+                            if is_possible_sommet(list_eq_sil, sommet_sil):
+                                if find_rotation(list_eq_form[0], list_eq_form[1]) == find_rotation(list_eq_sil[0], list_eq_sil[1]):
+                                    if find_rotation(list_eq_form[0], list_eq_sil[0]) == find_rotation(list_eq_form[1], list_eq_sil[1]):
+                                        if (size(list_eq_form[0]) <= size(list_eq_sil[0])) and (size(list_eq_form[1]) <= size(list_eq_sil[1])):
+                                            rotation = find_rotation(list_eq_form[0], list_eq_sil[0])
+                                            rotation = -rotation
+                                            form.forme.rotation(rotation)
+                                            sommet = form.get_sommets(form.forme.new_scale)[0]
+                                            list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                            form.move(sommet, sommet_sil, self.width, self.height)
+                                            
+                                            if silhouette.complete(form):
+                                                return True
+                                            else:
+                                                form.move(sommet_sil, sommet, self.width, self.height)
+                                                form.forme.rotation(-rotation)
+                        return False
+                    else:
+                        return False
                 else:
                     for i in range(len(form.get_sommets())):
                         if form not in moved_forms:
@@ -29,53 +66,73 @@ class Ia :
                             list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
                             sommet_sil_removed = []
                             for sommet_sil in silhouette.sommets:
-                                if sommet_sil not in sommet_sil_removed:
+                                list_eq_sil = silhouette.find_equation_with(sommet_sil)
+                                if sommet_sil not in sommet_sil_removed and is_possible_sommet(list_eq_sil, sommet_sil):
                                     #print("forme :", find_equation_with(form, sommet, form.forme.new_scale))
                                     if form not in moved_forms:
-                                        list_eq_sil = silhouette.find_equation_with(sommet_sil)
                                         #print("rotation de :", rotation*180/pi, "entre :", list_eq_form[0], " et ", list_eq_sil[0])
                                         rotation = 0
-                                        if find_rotation(list_eq_form[0], list_eq_sil[0]) == find_rotation(list_eq_form[1], list_eq_sil[1]):
-                                            rotation = find_rotation(list_eq_form[0], list_eq_sil[0])
-                                            form.forme.rotation(rotation)
-                                            #print(list_eq_form[0], " et ", list_eq_sil[0], " egal a ", list_eq_form[1], " et ", list_eq_sil[1])
-                                            #print("forme :", list_forms.index(form), "rotation :", rotation*180/pi)
-                                            sommet = form.get_sommets(form.forme.new_scale)[i]
-                                            list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
-                                        elif find_rotation(list_eq_form[0], list_eq_sil[1]) == find_rotation(list_eq_form[1], list_eq_sil[0]):
-                                            rotation = find_rotation(list_eq_form[0], list_eq_sil[1])
-                                            form.forme.rotation(rotation)
-                                            #print(list_eq_form[0], " et ", list_eq_sil[1], " egal a ", list_eq_form[1], " et ", list_eq_sil[0])
-                                            #print("forme :", list_forms.index(form), "rotation :", rotation*180/pi)
-                                            sommet = form.get_sommets(form.forme.new_scale)[i]
-                                            list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                        if find_rotation(list_eq_form[0], list_eq_form[1]) == find_rotation(list_eq_sil[0], list_eq_sil[1]):
+                                            if find_rotation(list_eq_form[0], list_eq_sil[0]) == find_rotation(list_eq_form[1], list_eq_sil[1]):
+                                                rotation = find_rotation(list_eq_form[0], list_eq_sil[0])
+                                                rotation = -rotation
+                                                form.forme.rotation(rotation)
+                                                #print(list_eq_form[0], " et ", list_eq_sil[0], " egal a ", list_eq_form[1], " et ", list_eq_sil[1])
+                                                # print("forme :", list_forms.index(form), "rotation :", rotation*180/pi)
+                                                sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                # print("Nouveaux sommets apres rotation : ", list_eq_form)
+                                            elif find_rotation(list_eq_form[0], list_eq_sil[1]) == find_rotation(list_eq_form[1], list_eq_sil[0]):
+                                                rotation = find_rotation(list_eq_form[0], list_eq_sil[1])
+                                                #rotation = -rotation
+                                                form.forme.rotation(rotation)
+                                                #print(list_eq_form[0], " et ", list_eq_sil[1], " egal a ", list_eq_form[1], " et ", list_eq_sil[0])
+                                                # print("forme :", list_forms.index(form), "rotation :", rotation*180/pi)
+                                                sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                # print("Nouveaux sommets apres rotation : ", list_eq_form)
                                         if are_para(list_eq_form[0], list_eq_sil[0]) and are_para(list_eq_form[1], list_eq_sil[1]):
                                             if direction(list_eq_form[0], sommet) == direction(list_eq_sil[0], sommet_sil) and direction(list_eq_form[1], sommet) == direction(list_eq_sil[1], sommet_sil):
                                                 if (size(list_eq_form[0]) <= size(list_eq_sil[0])) and (size(list_eq_form[1]) <= size(list_eq_sil[1])):
                                                     form.move(sommet, sommet_sil, self.width, self.height)
-                                                    saved_sommet = deepcopy(sommet)
-                                                    sommet = form.get_sommets(form.forme.new_scale)[i]
-                                                    #print("sommet : ", sommet)
-                                                    #print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
-                                                    #print("silhouette : ", silhouette.sommets)
-                                                    list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
-                                                    saved_silhouette = deepcopy(silhouette)
-                                                    silhouette.remove(form, sommet)
-                                                    sommet_sil_removed.append(sommet)
-                                                    moved_forms.append(form)
+                                                    if authorized_move(form, moved_forms):
+                                                        saved_sommet = deepcopy(sommet)
+                                                        sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                        #print("sommet : ", sommet)
+                                                        # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
+                                                        # print("silhouette : ", silhouette.sommets)
+                                                        list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                        saved_silhouette = deepcopy(silhouette)
+                                                        saved_silhouette.remove(form, sommet)
+                                                        # print("new coords silhouette : ", silhouette.sommets)
+                                                        sommet_sil_removed.append(sommet)
+                                                        moved_forms.append(form)
 
-                                                #print("continue without : ", [list_forms.index(form) for form in moved_forms])
-                                                if self.solve(silhouette, list_forms, moved_forms):
-                                                    return True
+                                                        # print("continue without : ", [list_forms.index(form) for form in moved_forms])
+                                                        if self.solve(saved_silhouette, list_forms, moved_forms):
+                                                            # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
+                                                            # print("rotation de :", rotation*180/pi)
+                                                            # print("couples silhouette : ", silhouette.couples)
+                                                            # print("saved sil : ", saved_silhouette.couples)
+                                                            return True
+                                                        else:
+                                                            # print("backtrack sur forme : ", list_forms.index(form))
+                                                            #silhouette = deepcopy(saved_silhouette)
+                                                            moved_forms.remove(form)
+                                                            form.move(sommet_sil, saved_sommet, self.width, self.height)
+                                                            form.forme.rotation(-rotation)
+                                                            sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                            list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                    else:
+                                                        form.move(sommet_sil, sommet, self.width, self.height)
+                                                        form.forme.rotation(-rotation)
                                                 else:
-                                                    #print("backtrack sur forme : ", list_forms.index(form))
-                                                    silhouette = deepcopy(saved_silhouette)
-                                                    moved_forms.remove(form)
-                                                    form.move(sommet_sil, saved_sommet, self.width, self.height)
+                                                    #print("PAS MEME TAILLE")
                                                     form.forme.rotation(-rotation)
                                                     sommet = form.get_sommets(form.forme.new_scale)[i]
                                                     list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
                                             else:
+                                                #print("PAS MEME DIRECTION")
                                                 form.forme.rotation(-rotation)
                                                 sommet = form.get_sommets(form.forme.new_scale)[i]
                                                 list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
@@ -84,38 +141,50 @@ class Ia :
                                             if direction(list_eq_form[1], sommet) == direction(list_eq_sil[0], sommet_sil) and direction(list_eq_form[0], sommet) == direction(list_eq_sil[1], sommet_sil):
                                                 if (size(list_eq_form[1]) <= size(list_eq_sil[0])) and (size(list_eq_form[0]) <= size(list_eq_sil[1])):
                                                     form.move(sommet, sommet_sil, self.width, self.height)
-                                                    saved_sommet = deepcopy(sommet)
-                                                    sommet = form.get_sommets(form.forme.new_scale)[i]
-                                                    #print("sommet : ", sommet)
-                                                    #print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
-                                                    #print("silhouette : ", silhouette.sommets)
-                                                    list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
-                                                    saved_silhouette = deepcopy(silhouette)
-                                                    silhouette.remove(form, sommet)
-                                                    sommet_sil_removed.append(sommet)
-                                                    moved_forms.append(form)
-
-                                                    #print("continue without : ", [list_forms.index(form) for form in moved_forms])
-                                                    if self.solve(silhouette, list_forms, moved_forms):
-                                                        return True
-                                                    else:
-                                                        #print("backtrack sur forme : ", list_forms.index(form))
-                                                        silhouette = deepcopy(saved_silhouette)
-                                                        moved_forms.remove(form)
-                                                        form.move(sommet_sil, saved_sommet, self.width, self.height)
-                                                        form.forme.rotation(-rotation)
+                                                    if authorized_move(form, moved_forms):
+                                                        saved_sommet = deepcopy(sommet)
                                                         sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                        #print("sommet : ", sommet)
+                                                        # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
+                                                        # print("silhouette : ", silhouette.sommets)
                                                         list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                        saved_silhouette = deepcopy(silhouette)
+                                                        saved_silhouette.remove(form, sommet)
+                                                        # print("new coords silhouette : ", silhouette.sommets)
+                                                        sommet_sil_removed.append(sommet)
+                                                        moved_forms.append(form)
+
+                                                        # print("continue without : ", [list_forms.index(form) for form in moved_forms])
+                                                        if self.solve(saved_silhouette, list_forms, moved_forms):
+                                                            # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
+                                                            # print("rotation de :", rotation*180/pi)
+                                                            # print("couples silhouette : ", silhouette.couples)
+                                                            # print("saved sil : ", saved_silhouette.couples)
+                                                            return True
+                                                        else:
+                                                            # print("backtrack sur forme : ", list_forms.index(form))
+                                                            #silhouette = deepcopy(saved_silhouette)
+                                                            moved_forms.remove(form)
+                                                            form.move(sommet_sil, saved_sommet, self.width, self.height)
+                                                            form.forme.rotation(-rotation)
+                                                            sommet = form.get_sommets(form.forme.new_scale)[i]
+                                                            list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
+                                                    else:
+                                                        form.move(sommet_sil, sommet, self.width, self.height)
+                                                        form.forme.rotation(-rotation)
                                                 else:
+                                                    #print("PAS MEME TAILLE")
                                                     form.forme.rotation(-rotation)
                                                     sommet = form.get_sommets(form.forme.new_scale)[i]
                                                     list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
                                             else:
+                                                #print("PAS MEME DIRECTION")
                                                 form.forme.rotation(-rotation)
                                                 sommet = form.get_sommets(form.forme.new_scale)[i]
                                                 list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
 
                                         else:
+                                            #print("ON EST PAS PARALLELE")
                                             form.forme.rotation(-rotation)
                                             sommet = form.get_sommets(form.forme.new_scale)[i]
                                             list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
@@ -124,6 +193,24 @@ class Ia :
 def size(eq):
     pt1, pt2 = eq[-2], eq[-1]
     return sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)
+    
+def is_possible_sommet(list_eq_sil, sommet):
+    # print("equations silhouette envoyees dans la verif de validite : ",list_eq_sil)
+    # print("sommet associé : ", sommet)
+    first_eq = []
+    last_pt = []
+    for eq in list_eq_sil:
+        if eq[-1] == sommet:
+            first_eq = eq
+        else:
+            last_pt = eq[-1]
+    
+    vect_origine = [first_eq[-1][0] - first_eq[-2][0], first_eq[-1][1] - first_eq[-2][1]]
+    vect_test = [last_pt[0] - first_eq[-2][0], last_pt[1] - first_eq[-2][1]]
+    
+    det = vect_origine[0] * vect_test[1] - vect_origine[1] * vect_test[0]
+    
+    return det > 0
     
 def find_rotation(eq_forme, eq_sil):
     p1, p2 = eq_forme[-2], eq_forme[-1]
@@ -139,5 +226,12 @@ def find_rotation(eq_forme, eq_sil):
     elif result < -1:
         result = -1
     angle = acos(result)
+    angle = round(angle*180/pi) #On ne peut faire que des rotations d'un degré minimum donc on transfert en deg, on le round, et on le retransfere en rads
+    return angle*pi/180
     
-    return angle
+def authorized_move(form, list_form):
+    size = form.forme.new_scale
+    for form_test in list_form:
+        if form.isCutting(form_test, size) or form_test.isCutting(form, size):
+            return False
+    return True
