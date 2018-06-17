@@ -106,7 +106,6 @@ class Ia :
                                                             last_eq = eq
                                                     list_eq_form = [first_eq, last_eq]
                                                     # print("Nouveaux sommets apres rotation : ", list_eq_form)
-                                            if are_para(list_eq_form[0], list_eq_sil[0]) and are_para(list_eq_form[1], list_eq_sil[1]):
                                                 if direction(list_eq_form[0], sommet) == direction(list_eq_sil[0], sommet_sil) and direction(list_eq_form[1], sommet) == direction(list_eq_sil[1], sommet_sil):
                                                     if valid_size(list_eq_form, list_eq_sil, silhouette, priority):
                                                         # print("sommet sil : ",sommet_sil)
