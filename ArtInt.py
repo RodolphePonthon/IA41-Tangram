@@ -18,7 +18,7 @@ class Ia :
     def solve(self, silhouette, list_forms, moved_forms):
         memories = [[], [], [], [], [], [], []]
         priority = "fullSize"
-        for i in range(2):
+        for i in range(3):
             for form in list_forms:
                 # print("sommets nouvelle forme : ", form.get_sommets(form.forme.new_scale))
                 # print("nb Pieces : ", len(list_forms) - len(moved_forms))
@@ -74,7 +74,6 @@ class Ia :
                                     else:
                                         last_eq = eq
                                 list_eq_form = [first_eq, last_eq]
-                                sommet_sil_removed = []
                                 for sommet_sil in silhouette.sommets:
                                     if len(silhouette.find_equation_with(sommet_sil)) > 2:
                                         continue
@@ -86,7 +85,7 @@ class Ia :
                                         else:
                                             last_eq = eq
                                     list_eq_sil = [first_eq, last_eq]
-                                    if sommet_sil not in sommet_sil_removed and is_possible_sommet(list_eq_sil, sommet_sil):
+                                    if is_possible_sommet(list_eq_sil, sommet_sil):
                                         # print("forme :", list_eq_form)
                                         if form not in moved_forms:
                                             # print("rotation de :", rotation*180/pi, "entre :", list_eq_form[0], " et ", list_eq_sil[0])
@@ -124,16 +123,15 @@ class Ia :
                                                             saved_silhouette = deepcopy(silhouette)
                                                             saved_silhouette.remove(form, sommet)
                                                             # print("new coords silhouette : ", silhouette.sommets)
-                                                            sommet_sil_removed.append(sommet)
                                                             moved_forms.append(form)
 
-                                                            print("continue without : ", [list_forms.index(form) for form in moved_forms])
+                                                            # print("continue without : ", [list_forms.index(form) for form in moved_forms])
                                                             
                                                             memories[list_forms.index(form)].append(form.get_sommets(form.forme.new_scale))
                                                             if self.solve(saved_silhouette, list_forms, moved_forms):
-                                                                print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
-                                                                print("rotation de :", rotation*180/pi)
-                                                                print("couples silhouette : ", silhouette.couples)
+                                                                # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
+                                                                # print("rotation de :", rotation*180/pi)
+                                                                # print("couples silhouette : ", silhouette.couples)
                                                                 # print("saved sil : ", saved_silhouette.couples)
                                                                 return True
                                                             else:
@@ -191,7 +189,10 @@ class Ia :
                                                     else:
                                                         last_eq = eq
                                                 list_eq_form = [first_eq, last_eq]
-            priority = "all"
+            if priority == "fullSize":
+                priority = "halfSize"
+            elif priority == "halfSize":
+                priority = "all"
         return False
                         
 def size(eq):
@@ -264,7 +265,12 @@ def authorized_move(form, list_form, silhouette, sommet, list_eq_form, sommet_si
     return True
     
 def valid_size(list_eq_form, list_eq_sil, silhouette, priority):
+    
     if priority == "fullSize":
+        if size(list_eq_form[0]) == size(list_eq_sil[0]) and size(list_eq_form[1]) == size(list_eq_sil[1]):
+            return True
+            
+    elif priority == "halfSize":
         if size(list_eq_form[0]) == size(list_eq_sil[0]) and size(list_eq_form[1]) <= size(list_eq_sil[1]):
             return True
         elif size(list_eq_form[0]) <= size(list_eq_sil[0]) and size(list_eq_form[1]) == size(list_eq_sil[1]):

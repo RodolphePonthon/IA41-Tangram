@@ -9,6 +9,7 @@ class silhouette:
     def __init__(self, list_pts_form):
         list_pts_form_cpy = [deepcopy(pt) for pt in list_pts_form]
         self.couples = creation_couples(list_pts_form_cpy)
+        self.sort()
         del list_pts_form_cpy[-1]
         self.sommets = list_pts_form_cpy
        
@@ -94,6 +95,8 @@ class silhouette:
         
         self.couples = listTmp
         
+        self.sort()
+        
         self.sommets = []
         self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
 
@@ -124,6 +127,10 @@ class silhouette:
             if sommet in self.sommets:
                 test.remove(sommet)
         return test == []
+        
+    def sort(self):
+        
+        self.couples.sort(key = lambda couple : (couple[1][0]-couple[0][0])**2 + (couple[1][1]-couple[0][1])**2, reverse = True)
     
 def creation_couples(list_pts):
     list_cpl = []
@@ -140,3 +147,4 @@ def are_para(eq, eq_test):
             return eq[0] == eq_test[0]
 
     return False
+    

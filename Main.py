@@ -133,8 +133,9 @@ def main():
                         for Gforme in list_GraphicForm:
                             if zoneDepart.isOn(Gforme):
                                 zoneDepartVide = 0
-                                print("Zone de depart n est pas vide !")
+                                # print("Zone de depart n est pas vide !")
                         if zoneDepartVide:
+                            zoneDessin = Zone((width/2, 0), (width/2, height), "Textures/ZoneDessin.png")
                             phase = 2
 
                 elif pyg.mouse.get_pressed()[0] and move:
@@ -259,10 +260,10 @@ def main():
                                 silhouetteForme.clean_couples()
                                 zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
                                 phase = 3
-                            else:
-                                print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
-                        else:
-                            print("Liste de points vide !")
+                            # else:
+                                # print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
+                        # else:
+                            # print("Liste de points vide !")
                             
         elif phase ==3:
 
@@ -292,9 +293,10 @@ def main():
             
             list_GraphicForm = ia.list_form
             list_ptsForme = []
+            
+            zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
             phase = 1
     pyg.quit()
-    exit()
 
 if __name__ == '__main__':
     main()
