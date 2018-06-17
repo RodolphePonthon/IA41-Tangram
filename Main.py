@@ -21,14 +21,14 @@ def draw(screen, gForm, withBorder = True):
 def init_forms(width, height):
     triangle = Form([[50,50],[0,100],[0,0]])
     triangle2 = Form([[100,0],[50,50],[0,0]])
-    triangle3 = Form([[75,25],[100,0],[100,50]])
-    triangle4 = Form([[50,100],[100,50],[100,100]])
+    triangle3 = Form([[50,100],[100,50],[100,100]])
+    triangle4 = Form([[75,25],[100,0],[100,50]])
     triangle5 = Form([[25,75],[50,50],[75,75]])
     carre = Form([[50,50],[75,25],[100,50],[75,75]])
     para = Form([[0,100],[25,75],[75,75],[50,100]])
 
-    list_forms = [triangle, triangle2, triangle3, triangle4, triangle5, carre, para]
-
+    list_forms = [triangle, triangle2, triangle3, para, carre,triangle4, triangle5]
+    # list_forms = [triangle5, triangle4, carre, para, triangle3, triangle2, triangle]
     list_GraphicForm = []
     for form in list_forms:
         list_GraphicForm.append(GraphicForm(form, width/4 - height/4, int(height/4), int(height/2)))

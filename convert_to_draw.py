@@ -1,4 +1,5 @@
 from form import equation as make_eq
+from form import equation_solve
 
 def convert_to_draw(list_gForms):
     size = list_gForms[0].forme.new_scale
@@ -185,3 +186,9 @@ def belongsTo(point, eq):
     belongsY = p1[1] <= point[1] <= p2[1] or p1[1] >= point[1] >= p2[1]
 
     return belongsY and belongsX
+    
+def isOnEq(point, eq):
+    if len(eq) == 3:
+        return belongsTo(point, eq)
+    else:
+        return equation_solve(eq, point[0]) == point[1] and belongsTo(point, eq)

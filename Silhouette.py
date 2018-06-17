@@ -3,6 +3,7 @@
 from form import equation
 from convert_to_draw import find_equation_with
 from copy import deepcopy
+from convert_to_draw import isOnEq
 
 class silhouette:
     def __init__(self, list_pts_form):
@@ -16,21 +17,34 @@ class silhouette:
         toAppend = []
         # print("couples before cleaning : ", self.couples)
         for couple in self.couples:
-            for couple_test in self.couples:
-                if couple != couple_test:
-                    if couple[1] == couple_test[0]:
-                        if are_para(equation(couple[0], couple[1]), equation(couple_test[0], couple_test[1])):
-                            toRemove.append(couple)
-                            toRemove.append(couple_test)
-                            if [couple_test[1], couple[0]] not in toAppend:
-                                toAppend.append([couple[0], couple_test[1]])
-                    elif couple[0] == couple_test[1]:
-                        if are_para(equation(couple[1], couple[0]), equation(couple_test[1], couple_test[0])):
-                            toRemove.append(couple)
-                            toRemove.append(couple_test)
-                            if [couple[1], couple_test[0]] not in toAppend:
-                                toAppend.append([couple_test[0], couple[1]])
-        
+            if couple not in toRemove:
+                for couple_test in self.couples:
+                    if couple != couple_test and couple_test not in toRemove:
+                        if couple[1] == couple_test[0]:
+                            if are_para(equation(couple[0], couple[1]), equation(couple_test[0], couple_test[1])):
+                                toRemove.append(couple)
+                                toRemove.append(couple_test)
+                                if [couple_test[1], couple[0]] not in toAppend:
+                                    toAppend.append([couple[0], couple_test[1]])
+                        elif couple[0] == couple_test[1]:
+                            if are_para(equation(couple[1], couple[0]), equation(couple_test[1], couple_test[0])):
+                                toRemove.append(couple)
+                                toRemove.append(couple_test)
+                                if [couple[1], couple_test[0]] not in toAppend:
+                                    toAppend.append([couple_test[0], couple[1]])
+                        
+                        else:
+                            equa_test = equation(couple_test[0], couple_test[1])
+                            equa = equation(couple[0], couple[1])
+                            if are_para(equa, equa_test):
+                                # print("couple et couple_test : ", couple, couple_test)
+                                # print("equa et equa_test", equa, equa_test)
+                                if isOnEq(couple[1], equa_test) and isOnEq(couple_test[1], equa):
+                                    toRemove.append(couple)
+                                    toRemove.append(couple_test)
+                                    toAppend.append([couple[0], couple_test[1]])
+                                    toAppend.append([couple_test[0], couple[1]])
+            
         self.couples = [couple for couple in self.couples if couple not in toRemove]
             
         self.couples += toAppend
