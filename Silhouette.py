@@ -16,7 +16,6 @@ class silhouette:
     def clean_couples(self):
         toRemove = []
         toAppend = []
-        # print("couples before cleaning : ", self.couples)
         for couple in self.couples:
             if couple not in toRemove:
                 for couple_test in self.couples:
@@ -38,8 +37,6 @@ class silhouette:
                             equa_test = equation(couple_test[0], couple_test[1])
                             equa = equation(couple[0], couple[1])
                             if are_para(equa, equa_test):
-                                # print("couple et couple_test : ", couple, couple_test)
-                                # print("equa et equa_test", equa, equa_test)
                                 if isOnEq(couple[1], equa_test) and isOnEq(couple_test[1], equa):
                                     toRemove.append(couple)
                                     toRemove.append(couple_test)
@@ -53,10 +50,6 @@ class silhouette:
     def remove(self, forme, sommet):
         eq_sil = self.find_equation_with(sommet)
         eq_form = find_equation_with(forme, sommet, forme.forme.new_scale)
-        
-        # print("sommet :", sommet)
-        # print("silhouette : ", self.sommets)
-        # print("couples b : ", self.couples)
 
         for eq in eq_sil:
             for eq_test in eq_form:
@@ -99,9 +92,6 @@ class silhouette:
         
         self.sommets = []
         self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
-
-        # print("couples a : ",self.couples)
-        # print("sommets new silhouette : ", self.sommets)
         
     def build_equations(self):
         equations = []
@@ -120,8 +110,6 @@ class silhouette:
         return equations
         
     def complete(self, form):
-        # print("sommets forme : ", form.get_sommets(form.forme.new_scale))
-        # print("sommets sil : ", self.sommets)
         test = deepcopy(self.sommets)
         for sommet in form.get_sommets(form.forme.new_scale):
             if sommet in self.sommets:
