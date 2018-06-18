@@ -147,4 +147,3 @@ def are_para(eq, eq_test):
             return eq[0] == eq_test[0]
 
     return False
-    

@@ -20,8 +20,6 @@ class Ia :
         priority = "fullSize"
         for i in range(3):
             for form in list_forms:
-                # print("sommets nouvelle forme : ", form.get_sommets(form.forme.new_scale))
-                # print("nb Pieces : ", len(list_forms) - len(moved_forms))
                 if form not in moved_forms:
                     if len(list_forms) - len(moved_forms) == 1:
                         if len(silhouette.sommets) == len(form.get_sommets()):
@@ -84,15 +82,11 @@ class Ia :
                                             last_eq = eq
                                     list_eq_sil = [first_eq, last_eq]
                                     if is_possible_sommet(list_eq_sil, sommet_sil):
-                                        # print("forme :", list_eq_form)
                                         if form not in moved_forms:
-                                            # print("rotation de :", rotation*180/pi, "entre :", list_eq_form[0], " et ", list_eq_sil[0])
                                             rotation = 0
                                             if find_rotation(list_eq_form[0], list_eq_form[1]) == find_rotation(list_eq_sil[0], list_eq_sil[1]):
                                                 rotation = find_rotation(list_eq_form[0], list_eq_sil[0])
                                                 form.forme.rotation(rotation)
-                                                # print(list_eq_form[0], " et ", list_eq_sil[0], " egal a ", list_eq_form[1], " et ", list_eq_sil[1])
-                                                # print("forme :", list_forms.index(form), "rotation :", rotation*180/pi)
                                                 sommet = form.get_sommets(form.forme.new_scale)[i]
                                                 first_eq = []
                                                 last_eq = []
@@ -102,35 +96,20 @@ class Ia :
                                                     else:
                                                         last_eq = eq
                                                 list_eq_form = [first_eq, last_eq]
-                                                # print("Nouveaux sommets apres rotation : ", list_eq_form)
                                                 if valid_size(list_eq_form, list_eq_sil, silhouette, priority):
-                                                    # print("sommet sil : ",sommet_sil)
-                                                    # print("sommet : ", sommet)
-                                                    # print("form.get_sommets(form.forme.new_scale)[",i,"] : ", form.get_sommets(form.forme.new_scale)[i])
                                                     form.move(sommet, sommet_sil, self.width, self.height)
                                                     if authorized_move(form, moved_forms, silhouette, form.get_sommets(form.forme.new_scale)[i], list_eq_form, sommet_sil, memories[list_forms.index(form)]):
                                                         saved_sommet = deepcopy(sommet)
                                                         sommet = form.get_sommets(form.forme.new_scale)[i]
-                                                        #print("sommet : ", sommet)
-                                                        # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
-                                                        # print("silhouette : ", silhouette.sommets)
                                                         list_eq_form = find_equation_with(form, sommet, form.forme.new_scale)
                                                         saved_silhouette = deepcopy(silhouette)
                                                         saved_silhouette.remove(form, sommet)
-                                                        # print("new coords silhouette : ", silhouette.sommets)
                                                         moved_forms.append(form)
 
-                                                        # print("continue without : ", [list_forms.index(form) for form in moved_forms])
-                                                        
                                                         memories[list_forms.index(form)].append(form.get_sommets(form.forme.new_scale))
                                                         if self.solve(saved_silhouette, list_forms, moved_forms):
-                                                            # print("forme :", list_forms.index(form), "move :", form.get_sommets(form.forme.new_scale))
-                                                            # print("rotation de :", rotation*180/pi)
-                                                            # print("couples silhouette : ", silhouette.couples)
-                                                            # print("saved sil : ", saved_silhouette.couples)
                                                             return True
                                                         else:
-                                                            # print("backtrack sur forme : ", list_forms.index(form))
                                                             moved_forms.remove(form)
                                                             form.move(sommet_sil, saved_sommet, self.width, self.height)
                                                             form.forme.rotation(-rotation)
@@ -144,11 +123,9 @@ class Ia :
                                                                     last_eq = eq
                                                             list_eq_form = [first_eq, last_eq]
                                                     else:
-                                                        # print("PAS AUTORISE")
                                                         form.move(sommet_sil, sommet, self.width, self.height)
                                                         form.forme.rotation(-rotation)
                                                 else:
-                                                    # print("PAS MEME TAILLE")
                                                     form.forme.rotation(-rotation)
                                                     sommet = form.get_sommets(form.forme.new_scale)[i]
                                                     first_eq = []
@@ -160,7 +137,6 @@ class Ia :
                                                             last_eq = eq
                                                     list_eq_form = [first_eq, last_eq]
                                             else:
-                                                # print("ON EST PAS PARALLELE")
                                                 form.forme.rotation(-rotation)
                                                 sommet = form.get_sommets(form.forme.new_scale)[i]
                                                 first_eq = []
@@ -182,8 +158,6 @@ def size(eq):
     return sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)
     
 def is_possible_sommet(list_eq_sil, sommet):
-    # print("equations silhouette envoyees dans la verif de validite : ",list_eq_sil)
-    # print("sommet associé : ", sommet)
     first_eq = []
     last_pt = []
     for eq in list_eq_sil:
@@ -232,10 +206,6 @@ def authorized_move(form, list_form, silhouette, sommet, list_eq_form, sommet_si
     for memory in memories_form:
         if set(tuple(s) for s in memory) - sommets:
             return False
-        
-    # for form_test in list_form:
-        # if form.isCutting(form_test, size) or form_test.isCutting(form, size):
-            # return False
     
     if len(form.get_sommets(size)) == 4:
         pt1, pt2 = list_eq_form[0][-2], list_eq_form[1][-1]

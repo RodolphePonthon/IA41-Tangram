@@ -1,39 +1,41 @@
-from form import equation as make_eq
-from form import equation_solve
+#!--*--coding:utf-8--*--
+
+from form import equation as make_eq, equation_solve
 
 def convert_to_draw(list_gForms):
     size = list_gForms[0].forme.new_scale
     points = []
-    eqKeep = []
-    eqTmp = []
-    criticalPoints = []
+    couples = []
     for i in range(len(list_gForms)):
         actualForm = list_gForms[i]
         for sommet in actualForm.get_sommets(size):
-            equations = find_equation_with(actualForm, sommet, size)
+            first_eq = []
+            last_eq = []
+            for eq in find_equation_with(actualForm, sommet, actualForm.forme.new_scale):
+                if eq[-1] == sommet:
+                    first_eq = eq
+                else:
+                    last_eq = eq
+            equations = [first_eq, last_eq]
             eqMerged  = 0
             eqAligned = 0
-            belongs = 0
+            notToAdd = []
 
             for j in range(len(list_gForms)):
                 if i != j:
                     formToTest = list_gForms[j]
-                    equationsToTest = find_equation_with(formToTest, sommet, size)
+                    equationsToTest = find_equation_with(formToTest, sommet, formToTest.forme.new_scale)
 
                     for eq in equations:
                         for eqTest in equationsToTest:
                             if areMerged(eq, eqTest, sommet):
                                 eqMerged += 1
+                                notToAdd.append(eq)
 
                             elif areAligned(eq, eqTest):
                                 eqAligned +=1
-
             if eqMerged == 2:
-                if eqAligned >= 1:
-                    if sommet not in criticalPoints:
-                        criticalPoints.append(sommet)
-                else:
-                    pass
+                pass
             elif eqMerged == 1:
                 if eqAligned == 1:
                     pass
@@ -41,89 +43,25 @@ def convert_to_draw(list_gForms):
                     if sommet not in points:
                         points.append(sommet)
                     for eq in equations:
-                        if eq not in eqKeep:
-                            eqKeep.append(eq)
+                        if eq not in notToAdd:
+                            if [eq[-2], eq[-1]] not in couples:
+                                couples.append([eq[-2], eq[-1]])
+                                couples = clean_couples(couples)
             else:
                 if sommet not in points:
                     points.append(sommet)
                 for eq in equations:
-                        if eq not in eqKeep:
-                            eqKeep.append(eq)
+                    if eq not in notToAdd:
+                        couples.append([eq[-2], eq[-1]])
+                        couples = clean_couples(couples)
 
-    points = sorted(points, key = lambda sommet: sommet[1])
-    points = sorted(points, key = lambda sommet: sommet[0]) 
+    print(len(points))
 
-    criticalPoints = [point for point in criticalPoints if point not in points]
+    for point in points:
+        print(point)
 
-    # for point in points:
-        # print(point)
-
-    # print(len(points))
-
-    # print("##########")
-
-    for eq in eqKeep:
-        p1, p2 = eq[-2], eq[-1]
-        if p1 not in points or p2 not in points:
-            eqTmp.append(eq)
-
-    for eq in eqTmp:
-        # print(eq)
-        eqKeep.remove(eq)
-        p1, p2 = eq[-2], eq[-1]
-        for eqToTest in eqTmp:
-            if eq != eqToTest:
-                p3, p4 = eqToTest[-2], eqToTest[-1]
-                if p1 not in points:
-                    if p1 not in criticalPoints and p2 not in criticalPoints:
-                        if p3 == p1 and areAligned(eq, eqToTest) and p2 != p4:
-                            eqKeep.append(make_eq(p2, p4))
-                        elif p4 == p1 and areAligned(eq, eqToTest) and p2 != p3:
-                            eqKeep.append(make_eq(p2, p3))
-                    if areHalfMerged(eq, eqToTest, p1):
-                        if belongsTo(p3, eq):
-                            if p3 in points and p2 != p3:
-                                eqKeep.append(make_eq(p2, p3))
-                        elif belongsTo(p4, eq):
-                            if p4 in points and p2 != p4:
-                                eqKeep.append(make_eq(p2, p4))
-                elif p2 not in points:
-                    if p1 not in criticalPoints and p2 not in criticalPoints:
-                        if p3 == p2 and areAligned(eq, eqToTest) and p1 != p4:
-                            eqKeep.append(make_eq(p1, p4))
-                        elif p4 == p2 and areAligned(eq, eqToTest) and p1 != p3:
-                            eqKeep.append(make_eq(p1, p3))
-                    if areHalfMerged(eq, eqToTest, p2):
-                        if belongsTo(p3, eq):
-                            if p3 in points and p3 != p1:
-                                eqKeep.append(make_eq(p1, p3))
-                        elif belongsTo(p4, eq):
-                            if p4 in points and p1 != p4:
-                                eqKeep.append(make_eq(p1, p4))
-
-    # print("##########")
-
-    eqToRemove = []
-
-    for eq in eqKeep:
-        p1, p2 = eq[-2], eq[-1]
-        for eq2 in eqKeep:
-            p3, p4 = eq2[-2], eq2[-1]
-            if eq != eq2:
-                if areAligned(eq, eq2) and (p1 == p4 or p2 == p3):
-                    if eq not in eqToRemove and eq2 not in eqToRemove:
-                        eqToRemove.append(eq)
-                        break
-
-    eqKeep = [eq for eq in eqKeep if eq not in eqToRemove]
-
-    # for eq in eqKeep:
-        # print(eq)
-
-    # print("#########")
-
-    # for point in criticalPoints:
-        # print(point)
+    for couple in couples:
+        print(couple)
 
     return points
 

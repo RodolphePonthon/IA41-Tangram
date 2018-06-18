@@ -11,6 +11,7 @@ from zone import Zone
 from convert_to_draw import convert_to_draw
 from ArtInt import Ia
 from Silhouette import silhouette
+from sys import exit
 
 environ['SDL_VIDEO_CENTERED'] = '1'
 
@@ -28,7 +29,6 @@ def init_forms(width, height):
     para = Form([[0,100],[25,75],[75,75],[50,100]])
 
     list_forms = [triangle, triangle2, triangle3, para, carre,triangle4, triangle5]
-    # list_forms = [triangle5, triangle4, carre, para, triangle3, triangle2, triangle]
     list_GraphicForm = []
     for form in list_forms:
         list_GraphicForm.append(GraphicForm(form, width/4 - height/4, int(height/4), int(height/2)))
@@ -49,6 +49,8 @@ def main():
     screen_rect = screen.get_rect()
     screen_rect.x = screen_rect.y = 0
     pyg.display.set_caption('IA41 - Tangram')
+    icon = pyg.image.load('Textures/icone.png')
+    pyg.display.set_icon(icon)
     screen.fill((200,200,200))
     clock = pyg.time.Clock()
     clock.tick(fps)
@@ -76,7 +78,6 @@ def main():
     msgSelect = Zone((0, 3*height/4), (width/2, 20*height/600), "Textures/messageSelection.png")
     buttonLock = Button((width/4-width/8, height-height/6), (width/4, height/8), "Textures/buttonLock.png")
     buttonCheck = Button((width/2-height*50/600, height-height*50/600), (height*50/600, height*50/600), "Textures/buttonCheck.png")
-
 
     for gForm in list_GraphicForm:
             for gForm2 in list_GraphicForm:
@@ -133,7 +134,6 @@ def main():
                         for Gforme in list_GraphicForm:
                             if zoneDepart.isOn(Gforme):
                                 zoneDepartVide = 0
-                                # print("Zone de depart n est pas vide !")
                         if zoneDepartVide:
                             zoneDessin = Zone((width/2, 0), (width/2, height), "Textures/ZoneDessin.png")
                             phase = 2
@@ -245,13 +245,11 @@ def main():
                                 
                     if buttonCheck.isOn(pyg.mouse.get_pos()):
                         if list_ptsForme != []:
-                            # print("list debut : ", list_ptsForme)
                             list_ptsFormeTmp = [list_ptsForme[0]]
                             for i in range(1, len(list_ptsForme)):
                                 if (list_ptsForme[i][0] != list_ptsForme[i-1][0]) or (list_ptsForme[i][1] != list_ptsForme[i-1][1]):
                                     list_ptsFormeTmp.append(list_ptsForme[i])
                             list_ptsForme = list_ptsFormeTmp
-                            # print("list debut apres suppr doublons : ", list_ptsForme)
                             if len(list_ptsForme) > 2 and list_ptsForme[0] == list_ptsForme[-1]:
                                 list_ptsFormeSurface = [deepcopy(pt) for pt in list_ptsForme]
                                 for pt in list_ptsForme:
@@ -260,10 +258,6 @@ def main():
                                 silhouetteForme.clean_couples()
                                 zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
                                 phase = 3
-                            # else:
-                                # print("Forme non conforme : vérifiez que le début est bien relié à la fin ou que la forme comporte au moins 3 sommets.")
-                        # else:
-                            # print("Liste de points vide !")
                             
         elif phase ==3:
 
@@ -297,6 +291,7 @@ def main():
             zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
             phase = 1
     pyg.quit()
+    exit()
 
 if __name__ == '__main__':
     main()
