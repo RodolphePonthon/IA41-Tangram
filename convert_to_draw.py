@@ -65,6 +65,7 @@ def convert_to_draw(list_gForms):
 
     return points
 
+#return the equations of a form from a given sommet
 def find_equation_with(form, sommet, size):
     equations = []
     for eq in form.build_equations(size):
@@ -73,6 +74,7 @@ def find_equation_with(form, sommet, size):
 
     return equations
 
+#return the direction of an equation from a given point on the equation
 def direction(eq, point):
     direction = 0
     if len(eq) == 3:
@@ -88,6 +90,7 @@ def direction(eq, point):
     
     return direction
 
+#Test if two equations are Aligned
 def areAligned(eq1, eq2):
     if len(eq1) == len(eq2):
         if len(eq1) == 3:
@@ -99,6 +102,7 @@ def areAligned(eq1, eq2):
 
     return False
 
+#Test if two equations are full merged
 def areMerged(eq1, eq2, point):
     sameDirection = False
     direction1 = direction(eq1, point)
@@ -109,6 +113,7 @@ def areMerged(eq1, eq2, point):
     
     return sameDirection and areAligned(eq1, eq2)
 
+#Test if two equations are merged but not full merged
 def areHalfMerged(eq1, eq2, point):
     halfMerged = False
 
@@ -118,6 +123,7 @@ def areHalfMerged(eq1, eq2, point):
     
     return halfMerged
 
+#Test if point belongs to the are of an equation
 def belongsTo(point, eq):
     p1, p2 = eq[-2], eq[-1]
     belongsX = p1[0] <= point[0] <= p2[0] or p1[0] >= point[0] >= p2[0]
@@ -125,6 +131,7 @@ def belongsTo(point, eq):
 
     return belongsY and belongsX
     
+#Test if a given point is on a given equation
 def isOnEq(point, eq):
     if len(eq) == 3:
         return belongsTo(point, eq)

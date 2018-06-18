@@ -3,8 +3,9 @@
 from math import cos, sin
 import copy
 
-class Form:
+#A form is defined by the coordinates of its sommets
 
+class Form:
     def __init__(self, sommets, new_scale = 100):
         self.scale = 100
         self.initial_sommets = sommets
@@ -14,6 +15,7 @@ class Form:
     def initialize(self):
         self.sommets = self.initial_sommets
 
+    #Return the coordinates of the sommets with the size given
     def get_sommets(self, size = 100):
         sommets = []
         size = float(size)/self.scale
@@ -21,6 +23,7 @@ class Form:
             sommets.append([round(sommet[0]*size), round(sommet[1]*size)])
         return sommets
 
+    #Return the point at the same distance of each sommets of the form
     def ptMoyen(self, size = 100):
         x, y = 0, 0
 
@@ -33,6 +36,7 @@ class Form:
         x /= l
         return[round(x), round(y)]
 
+    #See if a sommet is selected
     def isCornerSelected(self, p, size = 100):
         x = p[0]
         y = p[1]
@@ -46,6 +50,7 @@ class Form:
 
         return isSelected
         
+    #Return the sommet selected
     def getCornerSelected(self, p, size = 100):
         x = p[0]
         y = p[1]
@@ -80,6 +85,7 @@ class Form:
 
         return vect_eq
 
+    #Return True is a point is on the form
     def isOn(self, p, size = 100):
         equations = self.build_equations(size)
         isOn = True
@@ -90,6 +96,7 @@ class Form:
 
         return isOn
 
+    #Rotate the form with the given angle 
     def rotation(self, w):
         rotatedSommets = []
         p = [self.scale/2, self.scale/2]
@@ -101,6 +108,7 @@ class Form:
 
         self.sommets = rotatedSommets
 
+#Return parameters of the right equation between two points followed by the two points of the equation in a list
 def equation(first_point, second_point):
     if second_point[0] == first_point[0]:
         equation = [second_point[0], first_point, second_point]
@@ -121,6 +129,7 @@ def equation(first_point, second_point):
 
     return equation
 
+#Return the equation and the direction in X and in Y
 def equation_analyze(eq, p):
     vect_eq = [eq]
     dir_x, dir_y = 0, 0
@@ -142,6 +151,7 @@ def equation_analyze(eq, p):
         dir_y = (diff_y) / abs(diff_y) if diff_y != 0 else 0
     return[eq, dir_x, dir_y]
 
+#Solve the equation y = ax + b for a given x
 def equation_solve(eq, x):
     a = eq[0]
     b = eq[1]

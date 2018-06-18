@@ -4,6 +4,8 @@ from form import Form
 from form import equation
 import pygame as pyg
 
+#A from Graphic is defined by the form associated and the poisition on the screen
+
 class GraphicForm:
     def __init__(self, form, posX, posY, size):
         size = float(size)
@@ -25,6 +27,7 @@ class GraphicForm:
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(size))
         pyg.draw.polygon(self.formeSurface, (255,255,255), self.forme.get_sommets(size),3)
 
+    #Move a form on the screen 
     def move(self, ptInitial, ptFinal, width, height):
 
         offsetX = round(ptFinal[0] - ptInitial[0])
@@ -68,6 +71,7 @@ class GraphicForm:
         x /= l
         return[round(x), round(y)]
 
+    #Check the colisions with the border of the screen
     def offsetBorderCollision(self, offsetX, offsetY, width, height):
         for sommet in self.get_sommets(self.forme.new_scale):
             newX = sommet[0] + offsetX
@@ -91,6 +95,7 @@ class GraphicForm:
             sommet[0] += round(size/2/(size/self.forme.scale) - p[0],1)
             sommet[1] += round(size/2/(size/self.forme.scale)  - p[1],1)
 
+    #Redraw the form
     def update(self, withBorder = True):
         self.formeSurface.fill((0,0,0))
         pyg.draw.polygon(self.formeSurface, (1,1,1), self.forme.get_sommets(self.formeSurface.get_height()))
@@ -114,6 +119,7 @@ class GraphicForm:
             sommet[1] += self.formeRect.y
         return sommet
 
+    #Return True if the form and a given form are cutting
     def isCutting(self, gForm, size = 100):
         isCutting = False
         for sommet in self.get_sommets(size):
@@ -123,6 +129,7 @@ class GraphicForm:
 
         return isCutting
 
+    #Magnet form between then
     def magnet(self, form, width, height):
 
         #Definition de la "distance" de magnet

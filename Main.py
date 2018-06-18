@@ -3,22 +3,24 @@
 from copy import deepcopy
 import pygame as pyg
 from form import Form
-from Button import Button
 from GraphicForm import GraphicForm
+from Silhouette import silhouette
+from ArtInt import Ia
 from math import pi
 from os import environ
 from zone import Zone
+from Button import Button
 from convert_to_draw import convert_to_draw
-from ArtInt import Ia
-from Silhouette import silhouette
 from sys import exit
 
 environ['SDL_VIDEO_CENTERED'] = '1'
 
+#Draw form with border
 def draw(screen, gForm, withBorder = True):
     gForm.update(withBorder)
     screen.blit(gForm.formeSurface, gForm.formeRect)
 
+#Create a list of forms in the initialize position
 def init_forms(width, height):
     triangle = Form([[50,50],[0,100],[0,0]])
     triangle2 = Form([[100,0],[50,50],[0,0]])
@@ -28,15 +30,13 @@ def init_forms(width, height):
     carre = Form([[50,50],[75,25],[100,50],[75,75]])
     para = Form([[0,100],[25,75],[75,75],[50,100]])
 
+    #List sorted by "area", the biggest forms first 
     list_forms = [triangle, triangle2, triangle3, para, carre,triangle4, triangle5]
     list_GraphicForm = []
     for form in list_forms:
         list_GraphicForm.append(GraphicForm(form, width/4 - height/4, int(height/4), int(height/2)))
 
     return list_GraphicForm
-
-def gestion_event(evt):
-    pass
 
 def main():
     #Initialize screen
@@ -79,18 +79,15 @@ def main():
     buttonLock = Button((width/4-width/8, height-height/6), (width/4, height/8), "Textures/buttonLock.png")
     buttonCheck = Button((width/2-height*50/600, height-height*50/600), (height*50/600, height*50/600), "Textures/buttonCheck.png")
 
+    #"Magnet", is applied to all forms in order to have a good start position
     for gForm in list_GraphicForm:
             for gForm2 in list_GraphicForm:
                 gForm.magnet(gForm2, width, height)
 
-    finale = []
-    formToFind = [[121, 541], [121, 241], [46, 166], [121, 91], [46, 16], [346, 16], [346, 166], [271, 241], [271, 391]]
-
     while running:
+        #first phase, the user move and rotate forms to create a new one (silhouette)
         if phase == 1:
             #Place zones
-            for form in finale:
-                pyg.draw.polygon(zoneDessin.surface, (0,0,0), form)
             screen.blit(titreBg.surface, titreBg.rect)
             screen.blit(zoneDessin.surface, zoneDessin.rect)
             screen.blit(zoneDepart.surface, zoneDepart.rect)
@@ -128,7 +125,7 @@ def main():
                                 turn = True
                             else:
                                 move = True
-                    #testing if we are on a button
+                    #testing if we are on a button and move to the phase  2
                     zoneDepartVide = 1
                     if buttonLock.isOn(pyg.mouse.get_pos()):
                         for Gforme in list_GraphicForm:
@@ -138,6 +135,7 @@ def main():
                             zoneDessin = Zone((width/2, 0), (width/2, height), "Textures/ZoneDessin.png")
                             phase = 2
 
+                #Move the selected form
                 elif pyg.mouse.get_pressed()[0] and move:
                     ptTmp = pyg.mouse.get_pos()
                     actualForm.move(lastPtTmp, ptTmp, width, height)
@@ -153,6 +151,7 @@ def main():
                     screen.fill((200,200,200))
                     lastPtTmp = ptTmp
 
+                #Rotate the selected form
                 elif pyg.mouse.get_pressed()[0] and turn:
                     ptTmp = pyg.mouse.get_pos()
                     angle = (lastPtTmp[1] - ptTmp[1])
@@ -163,6 +162,7 @@ def main():
                         screen.fill((200,200,200))
                         lastPtTmp = ptTmp
 
+                #Move the selected form
                 elif evt.type == pyg.MOUSEBUTTONUP and move:
                     ptFinal = pyg.mouse.get_pos()
                     actualForm.move(lastPtTmp, ptFinal, width, height)
@@ -181,6 +181,7 @@ def main():
                     actualForm = None
                     move = False
 
+                #Rotate the selected form
                 elif evt.type == pyg.MOUSEBUTTONUP and turn:
                     ptTmp = pyg.mouse.get_pos()
                     angle = (lastPtTmp[1] - ptTmp[1])
@@ -192,22 +193,9 @@ def main():
                     actualForm = None
                     turn = False
 
-                elif evt.type == pyg.KEYDOWN:
-                    if evt.key == pyg.K_ESCAPE:
-                        running = False
-                    if evt.key == pyg.K_SPACE:
-                        formToFind = convert_to_draw(list_GraphicForm)
-                        finale = []
-                        for form in list_GraphicForm:
-                            s = []
-                            for sommet in form.get_sommets(form.formeSurface.get_height()):
-                                s.append([sommet[0] - zoneDessin.rect.x, sommet[1]])
-                            finale.append(s)
-                            form.initialize()
+        #Second phase, creation of the silhouette
         elif phase == 2:
             #Place zones
-            for form in finale:
-                pyg.draw.polygon(zoneDessin.surface, (0,0,0), form)
             screen.blit(zoneTransition.surface, zoneTransition.rect)
             screen.blit(zoneDessin.surface, zoneDessin.rect)
 
@@ -218,6 +206,7 @@ def main():
                 else:
                     draw(screen, gForm)
               
+            #Print the silhouette in real time
             if len(list_ptsForme) > 1:
                 pyg.draw.lines(zoneTransition.surface, (200,200,200), False, list_ptsForme, 5)
                 
@@ -243,6 +232,7 @@ def main():
                                 newSommet[0] -= width/2
                                 list_ptsForme.append(newSommet)
                                 
+                    # Testing if the silhouette is finished and move to phase 3
                     if buttonCheck.isOn(pyg.mouse.get_pos()):
                         if list_ptsForme != []:
                             list_ptsFormeTmp = [list_ptsForme[0]]
@@ -258,7 +248,8 @@ def main():
                                 silhouetteForme.clean_couples()
                                 zoneTransition = Zone((0, 0), (width/2, height), "Textures/ZoneDessin.png")
                                 phase = 3
-                            
+    
+        #Laste phase, call of the AI 
         elif phase ==3:
 
             for evt in pyg.event.get():
@@ -271,6 +262,7 @@ def main():
             
             forms_ia = init_forms(width, height)
 
+            #Print the forms give to the AI
             for gforme in forms_ia:
                 pyg.draw.polygon(zoneTransition.surface, (0,0,0), gforme.get_sommets(gforme.forme.new_scale))
                 pyg.draw.polygon(zoneTransition.surface, (200,200,200), gforme.get_sommets(gforme.forme.new_scale), 4)
@@ -280,7 +272,8 @@ def main():
             screen.blit(zoneDessin.surface, zoneDessin.rect)
             
             pyg.display.flip()
-            
+
+            # create and call the AI with the silhouette and a list a form (starting square)            
             ia = Ia(silhouetteForme, forms_ia, width, height)
             
             pyg.display.flip()

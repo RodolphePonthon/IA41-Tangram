@@ -5,6 +5,8 @@ from convert_to_draw import find_equation_with
 from copy import deepcopy
 from convert_to_draw import isOnEq
 
+# The silhouette is created with the list of points of the form in the good order
+
 class silhouette:
     def __init__(self, list_pts_form):
         list_pts_form_cpy = [deepcopy(pt) for pt in list_pts_form]
@@ -13,6 +15,7 @@ class silhouette:
         del list_pts_form_cpy[-1]
         self.sommets = list_pts_form_cpy
        
+    # Clean couples, join points on the same right
     def clean_couples(self):
         toRemove = []
         toAppend = []
@@ -47,6 +50,7 @@ class silhouette:
             
         self.couples += toAppend
 
+    #Remove a form from the silhouette
     def remove(self, forme, sommet):
         eq_sil = self.find_equation_with(sommet)
         eq_form = find_equation_with(forme, sommet, forme.forme.new_scale)
@@ -93,6 +97,7 @@ class silhouette:
         self.sommets = []
         self.sommets = [couple[0] for couple in self.couples if couple[0] not in self.sommets]
         
+    #Build equations of the silhouette
     def build_equations(self):
         equations = []
 
@@ -101,6 +106,7 @@ class silhouette:
             
         return equations
         
+    #Find equations associated with a given point
     def find_equation_with(self, sommet):
         equations = []
         for eq in self.build_equations():
@@ -109,23 +115,26 @@ class silhouette:
 
         return equations
         
+    #Test if a form complete the silhouette, in other words if the silhouette discribe the silhouette of the given form
     def complete(self, form):
         test = deepcopy(self.sommets)
         for sommet in form.get_sommets(form.forme.new_scale):
             if sommet in self.sommets:
                 test.remove(sommet)
         return test == []
-        
+
+    #sort the couples form the little to the biggest
     def sort(self):
-        
         self.couples.sort(key = lambda couple : (couple[1][0]-couple[0][0])**2 + (couple[1][1]-couple[0][1])**2, reverse = True)
     
+#Create coupes from list of ordonates points
 def creation_couples(list_pts):
     list_cpl = []
     for i in range(len(list_pts)-1):
         list_cpl.append([list_pts[i], list_pts[i+1]])
     return list_cpl
     
+#Test if two equations are parallel
 def are_para(eq, eq_test):
     if len(eq) == len(eq_test):
         if len(eq) == 3:
